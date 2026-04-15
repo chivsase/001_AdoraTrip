@@ -1,0 +1,102 @@
+Based on the full scope you listed — **Hotels, Homestays, Tour Packages, Travel Services, Price Comparison, Hotel Listing, User Reviews, Tourism Info, Local Guides, Transportation, Attractions, Packages** — your system is no longer just a simple booking platform.
+
+In professional terms, it becomes a **full tourism ecosystem platform**.
+
+Below are the correct industry names for such a system.
+
+---
+
+# 1. **Travel Super App**
+
+This is the strongest and most modern term.
+
+A **Travel Super App** is a platform that offers all travel-related services in one place.
+
+Examples:
+
+* Trip.com
+* Traveloka
+* Klook (partially)
+
+Your system fits this category perfectly.
+
+---
+
+# 2. **Integrated Travel & Tourism Platform**
+
+Used when a system provides:
+
+* accommodations
+* transportation
+* tours
+* attractions
+* travel services
+  All integrated into one digital ecosystem.
+
+This is a very professional term for business, investors, or government partnerships.
+
+---
+
+# 3. **All-in-One Cambodia Travel Marketplace**
+
+This term focuses on:
+
+* marketplace model
+* multiple suppliers (hotels, guides, drivers, tour operators)
+* multiple services operating inside Cambodia
+
+Excellent name if your platform specializes in Cambodia only.
+
+---
+
+# 4. **OTA + Tourism Marketplace Hybrid**
+
+Most OTAs (like Booking.com, Agoda) only do hotels.
+
+If you combine OTA + marketplace features, your system becomes a hybrid platform, which includes:
+
+* OTA (booking, hotels, homestays)
+* Marketplace (guides, tours, activities, transportation)
+
+This is a powerful position in the travel industry.
+
+---
+
+# Recommended Name for Your Platform
+
+Given your scope and target audience (foreigners and locals visiting Cambodia):
+
+### **Cambodia Travel Super App**
+
+or
+
+### **Cambodia All-in-One Travel Platform**
+
+These names communicate:
+
+* full coverage
+* multiple services
+* modern ecosystem approach
+* convenience for tourists
+
+---
+
+# If you want a clear explanation to show investors or partners:
+
+Your system can be described as:
+
+> **A unified digital platform that aggregates hotels, homestays, tours, transportation, attractions, local guides, and travel services into one integrated booking ecosystem for travelers visiting Cambodia.**
+
+---
+
+# If you want next steps, I can help you:
+
+* define the **complete system architecture**
+* list all required **modules and features**
+* create a **database structure**
+* design the **user journey flow** (search → compare → booking → payment → review)
+* define the **hotel partner onboarding process**
+* create **API structures** for partners
+* produce **wireframes** or **UI components**
+
+Tell me which one you want to work on next.

@@ -1,0 +1,87 @@
+version: "3.9"
+
+# ============================================================
+# AdoraTour — PRODUCTION Docker Compose Override
+# Use: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# ============================================================
+
+services:
+
+  api:
+    build:
+      target: production
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+
+  websocket:
+    build:
+      target: production
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+
+  celery_worker:
+    build:
+      target: production
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+    command: celery -A config.celery worker --loglevel=warning --concurrency=8 -Q default,emails,payments,reports
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+
+  celery_beat:
+    build:
+      target: production
+    restart: always
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+
+  # No Flower or pgAdmin in production
+  flower:
+    profiles:
+      - disabled
+
+  pgadmin:
+    profiles:
+      - disabled
+
+  db:
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 4G
+
+  redis:
+    restart: always
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
+      --requirepass ${REDIS_PASSWORD}
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  nginx:
+    restart: always
+    volumes:
+      - ./docker/nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/mediafiles:ro

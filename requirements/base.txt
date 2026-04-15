@@ -1,0 +1,49 @@
+# ============================================================
+# AdoraTour — Base Python Requirements
+# ============================================================
+
+# Django Core
+Django==5.1.4
+djangorestframework==3.15.2
+django-cors-headers==4.6.0
+django-filter==24.3
+
+# Django Channels (WebSocket / Real-time)
+channels==4.2.0
+channels-redis==4.2.1
+daphne==4.1.2
+
+# Database
+psycopg2-binary==2.9.10
+dj-database-url==2.3.0
+
+# Authentication
+djangorestframework-simplejwt==5.4.0
+django-allauth==65.3.0
+
+# Celery + Task Queue
+celery==5.4.0
+django-celery-beat==2.7.0
+django-celery-results==2.5.1
+redis==5.2.1
+
+# Storage (AWS S3)
+boto3==1.35.81
+django-storages==1.14.4
+Pillow==11.0.0
+
+# Payments
+stripe==11.2.0
+dj-stripe==2.9.0
+
+# Utilities
+python-decouple==3.8
+python-dateutil==2.9.0
+django-extensions==3.2.3
+django-model-utils==5.0.0
+
+# API Documentation
+drf-spectacular==0.28.0
+
+# Caching
+django-redis==5.4.0

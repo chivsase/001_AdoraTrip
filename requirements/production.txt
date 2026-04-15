@@ -1,0 +1,16 @@
+-r base.txt
+
+# Production server
+gunicorn==23.0.0
+
+# Error tracking
+sentry-sdk==2.19.2
+
+# Email
+sendgrid==6.11.0
+
+# SMS
+twilio==9.4.1
+
+# Security
+django-axes==7.0.1
