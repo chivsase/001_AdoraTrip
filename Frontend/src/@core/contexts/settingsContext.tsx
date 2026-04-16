@@ -2,7 +2,7 @@
 
 // React Imports
 import type { ReactNode } from 'react'
-import { createContext, useMemo, useState } from 'react'
+import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 // Type Imports
 import type { Mode, Skin, Layout, LayoutComponentWidth } from '@core/types'
@@ -13,6 +13,9 @@ import primaryColorConfig from '@configs/primaryColorConfig'
 
 // Hook Imports
 import { useObjectCookie } from '@core/hooks/useObjectCookie'
+
+// API Imports
+import { settingsApi } from '@/utils/api'
 
 // Settings type
 export type Settings = {
@@ -79,6 +82,47 @@ export const SettingsProvider = (props: Props) => {
     JSON.stringify(settingsCookie) !== '{}' ? settingsCookie : updatedInitialSettings
   )
 
+  // ─── Backend sync (debounced) ────────────────────────────────────
+  const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const hasSyncedRef = useRef(false)
+
+  const saveToBackend = useCallback((settings: Settings) => {
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current)
+
+    saveTimerRef.current = setTimeout(() => {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
+
+      if (token) {
+        settingsApi.save(settings as Record<string, unknown>).catch(() => {
+          // Silently fail — cookie is the fallback
+        })
+      }
+    }, 500)
+  }, [])
+
+  // Load from backend on mount (if logged in)
+  useEffect(() => {
+    if (hasSyncedRef.current) return
+
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
+
+    if (!token) return
+
+    hasSyncedRef.current = true
+
+    settingsApi.get().then(remote => {
+      if (remote && Object.keys(remote).length > 0) {
+        const merged = { ..._settingsState, ...remote } as Settings
+
+        _updateSettingsState(merged)
+        updateSettingsCookie(merged)
+      }
+    }).catch(() => {
+      // Backend unavailable — use cookie settings
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const updateSettings = (settings: Partial<Settings>, options?: UpdateSettingsOptions) => {
     const { updateCookie = true } = options || {}
 
@@ -86,7 +130,10 @@ export const SettingsProvider = (props: Props) => {
       const newSettings = { ...prev, ...settings }
 
       // Update cookie if needed
-      if (updateCookie) updateSettingsCookie(newSettings)
+      if (updateCookie) {
+        updateSettingsCookie(newSettings)
+        saveToBackend(newSettings)
+      }
 
       return newSettings
     })

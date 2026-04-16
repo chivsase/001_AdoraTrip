@@ -187,4 +187,17 @@ export const authApi = {
     }),
 }
 
+// ── Settings (Theme Customizer) Endpoints ────────────────────────────────────
+
+export const settingsApi = {
+  get: () =>
+    request<Record<string, unknown>>('/auth/settings/', { method: 'GET' }),
+
+  save: (data: Record<string, unknown>) =>
+    request<Record<string, unknown>>('/auth/settings/', {
+      method: 'PUT',
+      body: { data },
+    }),
+}
+
 export default request

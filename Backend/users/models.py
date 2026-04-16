@@ -128,3 +128,20 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f'{self.action} by {self.user_id} at {self.created_at}'
+
+
+class UserSettings(models.Model):
+    """
+    Persisted theme-customizer preferences (mode, skin, layout, colours …).
+    Stored as a single JSON blob so the frontend can read/write it freely
+    without schema migrations every time a new setting is added.
+    """
+    user       = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='settings')
+    data       = models.JSONField(default=dict, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'user_settings'
+
+    def __str__(self):
+        return f'Settings for {self.user.email}'

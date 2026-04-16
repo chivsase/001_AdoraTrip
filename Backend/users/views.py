@@ -381,6 +381,36 @@ class CSRFCookieView(APIView):
         return Response({'detail': 'CSRF cookie set.'})
 
 
+# ─── User Settings (Theme Customizer) ──────────────────────────────────────────
+
+class UserSettingsView(APIView):
+    """
+    GET  /api/v1/auth/settings/ → current customizer settings
+    PUT  /api/v1/auth/settings/ → save customizer settings
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        from users.models import UserSettings
+
+        obj, _ = UserSettings.objects.get_or_create(user=request.user)
+
+        return Response(obj.data)
+
+    def put(self, request):
+        from users.models import UserSettings
+        from users.serializers import UserSettingsSerializer
+
+        serializer = UserSettingsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        obj, _ = UserSettings.objects.get_or_create(user=request.user)
+        obj.data = serializer.validated_data['data']
+        obj.save(update_fields=['data', 'updated_at'])
+
+        return Response(obj.data)
+
+
 # ─── Admin — User Management ───────────────────────────────────────────────────
 
 class AdminUserListView(GenericAPIView):

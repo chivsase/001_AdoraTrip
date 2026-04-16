@@ -201,3 +201,25 @@ class AdminUserUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['platform_role', 'is_active']
+
+
+# ----------------------------------------------------------
+# User Settings (Theme Customizer)
+# ----------------------------------------------------------
+
+ALLOWED_SETTINGS_KEYS = {
+    'mode', 'skin', 'semiDark', 'layout',
+    'navbarContentWidth', 'contentWidth', 'footerContentWidth',
+    'primaryColor',
+}
+
+
+class UserSettingsSerializer(serializers.Serializer):
+    """Validate and whitelist the theme-customizer JSON blob."""
+    data = serializers.JSONField()
+
+    def validate_data(self, value):
+        if not isinstance(value, dict):
+            raise serializers.ValidationError('Settings must be a JSON object.')
+        # Strip any unknown keys
+        return {k: v for k, v in value.items() if k in ALLOWED_SETTINGS_KEYS}

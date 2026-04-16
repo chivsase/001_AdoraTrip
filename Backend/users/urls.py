@@ -16,6 +16,7 @@ from users.views import (
     PasswordResetRequestView,
     RegisterView,
     ResendVerificationView,
+    UserSettingsView,
 )
 
 app_name = 'auth'
@@ -32,6 +33,9 @@ urlpatterns = [
 
     # Profile
     path('me/',                   MeView.as_view(),                 name='me'),
+
+    # Settings (theme customizer)
+    path('settings/',             UserSettingsView.as_view(),       name='settings'),
 
     # CSRF
     path('csrf/',                 CSRFCookieView.as_view(),         name='csrf'),

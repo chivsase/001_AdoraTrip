@@ -311,3 +311,141 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
+
+# ----------------------------------------------------------
+# Logging — structured file output (like Laravel's storage/logs/)
+# Logs are written to Backend/logs/ (volume-mounted in Docker).
+# ----------------------------------------------------------
+LOG_DIR = BASE_DIR / 'logs'
+LOG_DIR.mkdir(exist_ok=True)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        # Detailed formatter for file output — timestamp, level, logger, message
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name} {module}.{funcName}:{lineno} — {message}',
+            'style': '{',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        # Compact formatter for console
+        'simple': {
+            'format': '{levelname} {name} — {message}',
+            'style': '{',
+        },
+    },
+
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+
+    'handlers': {
+        # Console — same as Django default, always active
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+
+        # All logs — daily rotating file (like Laravel's laravel-YYYY-MM-DD.log)
+        'file': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': LOG_DIR / 'adoratrip.log',
+            'when': 'midnight',
+            'interval': 1,
+            'backupCount': 30,          # Keep 30 days of logs
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+
+        # Errors only — separate file for quick triage
+        'error_file': {
+            'level': 'ERROR',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': LOG_DIR / 'error.log',
+            'when': 'midnight',
+            'interval': 1,
+            'backupCount': 90,          # Keep 90 days of error logs
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+
+        # SQL queries — only in debug mode, separate file to avoid noise
+        'sql_file': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': LOG_DIR / 'sql.log',
+            'when': 'midnight',
+            'interval': 1,
+            'backupCount': 7,
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+            'filters': ['require_debug_true'],
+        },
+    },
+
+    'loggers': {
+        # Root Django logger
+        'django': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+
+        # Django request errors (4xx/5xx)
+        'django.request': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+
+        # Database queries (DEBUG only)
+        'django.db.backends': {
+            'handlers': ['sql_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+
+        # Security-related logs (CSRF, auth failures)
+        'django.security': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+
+        # App loggers — use logging.getLogger('users') etc. in your code
+        'users': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'organizations': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'api': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+
+        # Celery task logs
+        'celery': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+
+    # Catch-all root logger
+    'root': {
+        'handlers': ['console', 'file', 'error_file'],
+        'level': 'INFO',
+    },
+}
