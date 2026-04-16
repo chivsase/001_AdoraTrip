@@ -4,6 +4,9 @@ import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 // Third-party Imports
 import 'react-perfect-scrollbar/dist/css/styles.css'
 
+// Font Imports
+import { Inter } from 'next/font/google'
+
 // Type Imports
 import type { ChildrenType } from '@core/types'
 
@@ -16,6 +19,13 @@ import '@/app/globals.css'
 // Generated Icon CSS Imports
 import '@assets/iconify-icons/generated-icons.css'
 
+const inter = Inter({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700', '800'],
+  variable: '--font-inter',
+  display: 'swap'
+})
+
 export const metadata = {
   title: 'AdoraTrip - Travel Management Platform',
   description:
@@ -25,15 +35,11 @@ export const metadata = {
 const RootLayout = async (props: ChildrenType) => {
   const { children } = props
 
-  // Type guard to ensure lang is a valid Locale
-
-  // Vars
-
   const systemMode = await getSystemMode()
   const direction = 'ltr'
 
   return (
-    <html id='__next' lang='en' dir={direction} suppressHydrationWarning>
+    <html id='__next' lang='en' dir={direction} suppressHydrationWarning className={inter.variable}>
       <body className='flex is-full min-bs-full flex-auto flex-col'>
         <InitColorSchemeScript attribute='data' defaultMode={systemMode} />
         {children}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { Clock, Flame, ArrowRight, Zap, Percent } from 'lucide-react'
+import { Clock, Flame, ArrowRight, Zap, Percent, MapPin } from 'lucide-react'
 import Link from 'next/link'
 
 interface Deal {
@@ -101,16 +101,16 @@ const deals: Deal[] = [
 ]
 
 const badgeStyle: Record<string, string> = {
-  'Flash Sale': 'bg-[#EF4444] text-white',
-  'Hot Deal': 'bg-[#FFB400] text-[#1A1A2E]',
-  'Member Price': 'bg-[#8B5CF6] text-white',
-  'Best Seller': 'bg-[#287DFA] text-white'
+  'Flash Sale':   'bg-[#EF4444] text-white',
+  'Hot Deal':     'bg-[#F59E0B] text-[#111827]',
+  'Member Price': 'bg-[#7C3AED] text-white',
+  'Best Seller':  'bg-[#287DFA] text-white'
 }
 
 const typeLabel: Record<Deal['type'], { label: string; color: string }> = {
-  tour: { label: 'Tour', color: 'text-[#10B981] bg-[#ECFDF5]' },
-  hotel: { label: 'Hotel', color: 'text-[#8B5CF6] bg-[#F3EEFF]' },
-  package: { label: 'Package', color: 'text-[#F59E0B] bg-[#FFFBEB]' }
+  tour:    { label: 'Tour',    color: 'text-[#059669] bg-[#ECFDF5]' },
+  hotel:   { label: 'Hotel',   color: 'text-[#7C3AED] bg-[#F5F3FF]' },
+  package: { label: 'Package', color: 'text-[#D97706] bg-[#FFFBEB]' }
 }
 
 function useCountdown(target: Date) {
@@ -131,13 +131,17 @@ function useCountdown(target: Date) {
 
 function Countdown({ target }: { target: Date }) {
   const { days, h, m, s, expired, mounted } = useCountdown(target)
-  if (!mounted) return <span className='flex items-center gap-1 text-[10px] font-bold text-white tabular-nums'><Clock className='w-3 h-3' />--:--:--</span>
-  if (expired) return <span className='text-[10px] text-[#EF4444] font-bold'>Expired</span>
+  if (!mounted) return (
+    <span className='flex items-center gap-1 text-[10px] font-bold text-white/90 tabular-nums'>
+      <Clock className='w-3 h-3' />--:--:--
+    </span>
+  )
+  if (expired) return <span className='text-[10px] text-[#FCA5A5] font-bold'>Expired</span>
   const display = days > 0
     ? `${days}d ${String(h).padStart(2, '0')}h left`
     : `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
   return (
-    <span className='flex items-center gap-1 text-[10px] font-bold text-white tabular-nums'>
+    <span className='flex items-center gap-1 text-[10px] font-bold text-white/90 tabular-nums'>
       <Clock className='w-3 h-3' />
       {display}
     </span>
@@ -146,23 +150,27 @@ function Countdown({ target }: { target: Date }) {
 
 export default function DealsSection() {
   return (
-    <section className='py-10 md:py-14 bg-white'>
-      <div className='max-w-[1080px] mx-auto px-4'>
+    <section className='py-14 md:py-20 bg-white'>
+      <div className='max-w-[1200px] mx-auto px-4 sm:px-6'>
 
         {/* Header */}
-        <div className='flex items-end justify-between mb-8'>
+        <div className='flex items-end justify-between mb-10'>
           <div>
-            <div className='flex items-center gap-2 mb-1'>
-              <Flame className='w-5 h-5 text-[#EF4444]' />
-              <h2 className='text-2xl sm:text-3xl font-extrabold text-[#1A1A2E]'>Today&apos;s Best Deals</h2>
+            {/* Eyebrow */}
+            <div className='inline-flex items-center gap-1.5 bg-[#FEF2F2] text-[#DC2626] text-[11px] font-bold uppercase tracking-[0.08em] px-3 py-1.5 rounded-full mb-3'>
+              <Flame className='w-3 h-3' />
+              Limited Time
             </div>
-            <p className='text-sm sm:text-base text-[#666B7A]'>
+            <h2 className='text-[1.85rem] sm:text-4xl font-extrabold text-[#111827] tracking-tight leading-tight'>
+              Today&apos;s Best Deals
+            </h2>
+            <p className='mt-2 text-sm sm:text-base text-[#6B7280]'>
               Exclusive discounts on hotels, tours & packages across Cambodia
             </p>
           </div>
           <Link
             href='/deals'
-            className='hidden sm:flex items-center gap-1 text-sm font-semibold text-[#287DFA] hover:text-[#1a6ae0] transition-colors duration-200 group whitespace-nowrap'
+            className='hidden sm:flex items-center gap-1.5 text-sm font-semibold text-[#287DFA] hover:text-[#1a6ae0] transition-colors duration-200 group whitespace-nowrap'
           >
             All Deals
             <ArrowRight className='w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-200' />
@@ -178,36 +186,37 @@ export default function DealsSection() {
               <Link
                 key={deal.id}
                 href={`/deals/${deal.id}`}
-                className='group bg-white rounded-2xl overflow-hidden border border-[#EAEAF0] hover:border-transparent hover:shadow-[0_12px_32px_rgba(0,0,0,0.10)] transition-all duration-300 hover:-translate-y-0.5'
+                className='group bg-white rounded-2xl overflow-hidden border border-[#E5E7EB] hover:border-transparent hover:shadow-[0_12px_36px_rgba(0,0,0,0.11)] transition-all duration-300 hover:-translate-y-0.5'
               >
                 {/* Image */}
-                <div className='relative h-44 overflow-hidden'>
+                <div className='relative h-48 overflow-hidden'>
                   <Image
                     src={deal.image}
                     alt={deal.title}
                     fill
                     sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
-                    className='object-cover group-hover:scale-105 transition-transform duration-500'
+                    className='object-cover group-hover:scale-[1.06] transition-transform duration-500'
                   />
 
                   {/* Discount chip */}
-                  <div className='absolute top-3 right-3 flex items-center gap-0.5 bg-[#EF4444] text-white text-xs font-extrabold px-2 py-1 rounded-lg'>
-                    <Percent className='w-3 h-3' />
+                  <div className='absolute top-3 right-3 flex items-center gap-0.5 bg-[#EF4444] text-white text-[11px] font-extrabold px-2 py-1 rounded-lg shadow-sm'>
+                    <Percent className='w-2.5 h-2.5' />
                     {deal.discount}% OFF
                   </div>
 
                   {/* Special badge */}
                   {deal.badge && (
-                    <span className={`absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1 ${badgeStyle[deal.badge] ?? 'bg-[#287DFA] text-white'}`}>
-                      <Zap className='w-3 h-3' />
+                    <span className={`absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm ${badgeStyle[deal.badge] ?? 'bg-[#287DFA] text-white'}`}>
+                      <Zap className='w-2.5 h-2.5' />
                       {deal.badge}
                     </span>
                   )}
 
-                  {/* Countdown overlay */}
-                  <div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/65 to-transparent px-3 py-2 flex items-center justify-between'>
-                    <span className='text-[11px] text-white/80 font-medium flex items-center gap-1'>
-                      📍 {deal.location}
+                  {/* Countdown + location overlay */}
+                  <div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent px-3.5 py-3 flex items-center justify-between'>
+                    <span className='flex items-center gap-1 text-[11px] text-white/80 font-medium'>
+                      <MapPin className='w-3 h-3' />
+                      {deal.location}
                     </span>
                     <Countdown target={deal.expiresAt} />
                   </div>
@@ -215,24 +224,24 @@ export default function DealsSection() {
 
                 {/* Body */}
                 <div className='p-4'>
-                  <div className='flex items-center gap-2 mb-2'>
-                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${tl.color}`}>
+                  <div className='flex items-center gap-2 mb-2.5'>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${tl.color}`}>
                       {tl.label}
                     </span>
                   </div>
 
-                  <h3 className='text-[15px] font-bold text-[#1A1A2E] group-hover:text-[#287DFA] transition-colors duration-200 leading-snug'>
+                  <h3 className='text-[15px] font-bold text-[#111827] group-hover:text-[#287DFA] transition-colors duration-200 leading-snug'>
                     {deal.title}
                   </h3>
-                  <p className='text-xs text-[#666B7A] mt-1 line-clamp-2'>{deal.description}</p>
+                  <p className='text-xs text-[#6B7280] mt-1 line-clamp-2 leading-relaxed'>{deal.description}</p>
 
                   {/* Price row */}
-                  <div className='mt-3 flex items-center justify-between'>
+                  <div className='mt-3.5 flex items-center justify-between'>
                     <div className='flex items-baseline gap-2'>
-                      <span className='text-sm text-[#C8CCD8] line-through'>${deal.originalPrice}</span>
-                      <span className='text-xl font-extrabold text-[#FFB400]'>${deal.salePrice}</span>
+                      <span className='text-sm text-[#C9CBD6] line-through'>${deal.originalPrice}</span>
+                      <span className='text-xl font-extrabold text-[#F59E0B]'>${deal.salePrice}</span>
                     </div>
-                    <span className='text-[10px] font-bold text-[#EF4444] bg-[#FEF2F2] px-2 py-1 rounded-full'>
+                    <span className='text-[10px] font-bold text-[#DC2626] bg-[#FEF2F2] px-2 py-1 rounded-full'>
                       Save ${deal.originalPrice - deal.salePrice}
                     </span>
                   </div>
@@ -243,7 +252,7 @@ export default function DealsSection() {
         </div>
 
         {/* Mobile CTA */}
-        <div className='flex justify-center mt-6 sm:hidden'>
+        <div className='flex justify-center mt-8 sm:hidden'>
           <Link href='/deals' className='flex items-center gap-1.5 text-sm font-semibold text-[#287DFA]'>
             View All Deals <ArrowRight className='w-4 h-4' />
           </Link>

@@ -41,7 +41,7 @@ export default function PromoBanner() {
   const Icon = promo.icon
 
   return (
-    <div className={`relative flex items-center justify-center gap-3 px-4 py-2.5 text-white text-xs sm:text-sm font-medium ${promo.bg} transition-colors duration-300`}>
+    <div className={`relative flex items-center justify-center gap-3 px-4 py-2.5 text-white text-[12.5px] sm:text-[13px] font-medium ${promo.bg} transition-colors duration-300`}>
       {/* Pagination dots */}
       <div className='hidden sm:flex items-center gap-1 absolute left-4'>
         {promos.map((_, i) => (

@@ -148,11 +148,11 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }: 
 
         {/* ── Cambodia branding strip (expanded only) ─── */}
         {!collapsed && (
-          <div className='hidden lg:flex items-center gap-2 mx-3 mt-3 mb-1 px-3 py-2 bg-gradient-to-r from-[#FFF8E8] to-[#FFF3D6] rounded-xl border border-[#FFE599]/60'>
+          <div className='hidden lg:flex items-center gap-2.5 mx-3 mt-3 mb-1 px-3 py-2.5 bg-gradient-to-r from-[#FFFBEB] to-[#FFF4CC] rounded-xl border border-[#FDE68A]/50'>
             <span className='text-xl leading-none'>🇰🇭</span>
             <div>
-              <p className='text-[11px] font-bold text-[#92660A] leading-tight'>Cambodia Travel</p>
-              <p className='text-[10px] text-[#B8850F]'>Explore all provinces</p>
+              <p className='text-[11px] font-bold text-[#92600A] leading-tight'>Cambodia Travel</p>
+              <p className='text-[10px] text-[#B45309] mt-0.5'>Explore all provinces</p>
             </div>
           </div>
         )}
@@ -204,8 +204,8 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }: 
                             relative flex items-center gap-2.5 px-2.5 py-[9px] rounded-xl
                             text-[13px] font-medium transition-all duration-200 group
                             ${isActive
-                              ? 'bg-[#EBF3FF] text-[#287DFA]'
-                              : 'text-[#444B5A] hover:bg-[#F5F7FF] hover:text-[#287DFA]'
+                              ? 'bg-[#EBF3FF] text-[#287DFA] shadow-[0_1px_4px_rgba(40,125,250,0.12)]'
+                              : 'text-[#4B5563] hover:bg-[#F3F6FF] hover:text-[#287DFA]'
                             }
                             ${collapsed ? 'lg:justify-center lg:px-2' : ''}
                           `}
@@ -228,7 +228,7 @@ export default function Sidebar({ open, collapsed, onClose, onToggleCollapse }: 
 
                           {/* Badge */}
                           {item.badge && !collapsed && (
-                            <span className='shrink-0 text-[9px] font-extrabold text-white bg-[#EF4444] px-1.5 py-0.5 rounded-full uppercase tracking-wide'>
+                            <span className='shrink-0 text-[9px] font-extrabold text-white bg-[#EF4444] px-2 py-0.5 rounded-full uppercase tracking-wide'>
                               {item.badge}
                             </span>
                           )}

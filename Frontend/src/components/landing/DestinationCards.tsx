@@ -123,27 +123,29 @@ const destinations: Destination[] = [
 
 const tagStyles: Record<string, string> = {
   'Most Popular': 'bg-[#287DFA] text-white',
-  'Beach Escape': 'bg-[#06B6D4] text-white',
-  'Hidden Gem': 'bg-[#10B981] text-white',
-  'Eco Adventure': 'bg-[#059669] text-white'
+  'Beach Escape': 'bg-[#0891B2] text-white',
+  'Hidden Gem':   'bg-[#059669] text-white',
+  'Eco Adventure':'bg-[#065F46] text-white'
 }
 
 export default function DestinationCards() {
   return (
-    <section className='py-10 md:py-14 bg-[#F8F9FA]'>
-      <div className='max-w-[1080px] mx-auto px-4'>
+    <section className='py-14 md:py-20 bg-[#F5F7FA]'>
+      <div className='max-w-[1200px] mx-auto px-4 sm:px-6'>
 
         {/* Section header */}
-        <div className='flex items-end justify-between mb-8'>
+        <div className='flex items-end justify-between mb-10'>
           <div>
-            <div className='flex items-center gap-2 mb-1.5'>
-              <span className='text-xl'>🇰🇭</span>
-              <h2 className='text-2xl sm:text-3xl font-extrabold text-[#1A1A2E]'>
-                Explore Cambodia
-              </h2>
+            {/* Eyebrow */}
+            <div className='inline-flex items-center gap-1.5 bg-[#EBF3FF] text-[#287DFA] text-[11px] font-bold uppercase tracking-[0.08em] px-3 py-1.5 rounded-full mb-3'>
+              <MapPin className='w-3 h-3' />
+              Explore Cambodia
             </div>
-            <p className='text-sm sm:text-base text-[#666B7A]'>
-              Discover stunning provinces — from ancient temples to island beaches
+            <h2 className='text-[1.85rem] sm:text-4xl font-extrabold text-[#111827] tracking-tight leading-tight'>
+              Popular Destinations
+            </h2>
+            <p className='mt-2 text-sm sm:text-base text-[#6B7280]'>
+              From ancient temples to island beaches — discover every province
             </p>
           </div>
           <Link
@@ -161,24 +163,24 @@ export default function DestinationCards() {
             <Link
               key={dest.id}
               href={`/province/${dest.id}`}
-              className='group bg-white rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.12)] transition-all duration-300 hover:-translate-y-1'
+              className='group bg-white rounded-2xl overflow-hidden shadow-[0_1px_4px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_36px_rgba(0,0,0,0.13)] transition-all duration-300 hover:-translate-y-1'
             >
               {/* Image */}
-              <div className='relative h-44 overflow-hidden'>
+              <div className='relative h-48 overflow-hidden'>
                 <Image
                   src={dest.image}
                   alt={`${dest.name}, Cambodia`}
                   fill
                   sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw'
-                  className='object-cover group-hover:scale-105 transition-transform duration-500'
+                  className='object-cover group-hover:scale-[1.06] transition-transform duration-500'
                 />
-                {/* Gradient */}
-                <div className='absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent' />
+                {/* Gradient overlay */}
+                <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent' />
 
                 {/* Wishlist */}
                 <button
                   onClick={e => e.preventDefault()}
-                  className='absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white hover:text-[#EF4444] transition-all duration-200'
+                  className='absolute top-3 right-3 w-7 h-7 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white hover:text-[#EF4444] transition-all duration-200'
                   aria-label='Save to wishlist'
                 >
                   <Heart className='w-3.5 h-3.5' />
@@ -186,31 +188,30 @@ export default function DestinationCards() {
 
                 {/* Tag badge */}
                 {dest.tag && (
-                  <span className={`absolute top-2.5 left-2.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${tagStyles[dest.tag] ?? 'bg-white/80 text-[#1A1A2E]'}`}>
+                  <span className={`absolute top-3 left-3 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${tagStyles[dest.tag] ?? 'bg-white/80 text-[#111827]'}`}>
                     {dest.tag}
                   </span>
                 )}
 
-                {/* Bottom info overlay */}
-                <div className='absolute bottom-0 left-0 right-0 px-3 pb-3'>
-                  <h3 className='text-base font-extrabold text-white leading-tight drop-shadow'>
+                {/* Name overlay */}
+                <div className='absolute bottom-0 left-0 right-0 px-3.5 pb-3.5'>
+                  <h3 className='text-[15px] font-extrabold text-white leading-tight drop-shadow-sm'>
                     {dest.name}
                   </h3>
                   <div className='flex items-center gap-1 mt-0.5'>
-                    <MapPin className='w-3 h-3 text-white/80' />
-                    <span className='text-[11px] text-white/80 font-medium'>{dest.province}</span>
+                    <MapPin className='w-3 h-3 text-white/75' />
+                    <span className='text-[11px] text-white/75 font-medium'>{dest.province}</span>
                   </div>
                 </div>
               </div>
 
               {/* Info body */}
-              <div className='p-3.5'>
-                {/* Tagline */}
-                <p className='text-xs text-[#666B7A] mb-2.5 line-clamp-1'>{dest.tagline}</p>
+              <div className='p-4'>
+                <p className='text-xs text-[#6B7280] mb-3 line-clamp-1'>{dest.tagline}</p>
 
                 {/* Rating row */}
-                <div className='flex items-center gap-1.5 mb-2.5'>
-                  <div className='flex items-center gap-0.5 bg-[#287DFA] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md'>
+                <div className='flex items-center gap-2 mb-3'>
+                  <div className='flex items-center gap-1 bg-[#287DFA] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md'>
                     <Star className='w-2.5 h-2.5 fill-current' />
                     {dest.rating}
                   </div>
@@ -219,24 +220,24 @@ export default function DestinationCards() {
                   </span>
                 </div>
 
-                {/* Stats row */}
-                <div className='flex items-center justify-between pt-2.5 border-t border-[#F0F0F5]'>
-                  <div className='flex items-center gap-1 text-[11px] text-[#8A92A6]'>
+                {/* Price + properties */}
+                <div className='flex items-center justify-between pt-3 border-t border-[#F3F4F6]'>
+                  <div className='flex items-center gap-1 text-[11px] text-[#9CA3AF]'>
                     <Hotel className='w-3.5 h-3.5' />
-                    <span>{dest.hotels}+ properties</span>
+                    <span>{dest.hotels}+ stays</span>
                   </div>
                   <div className='text-right'>
                     <span className='text-[10px] text-[#9CA3AF]'>from </span>
-                    <span className='text-sm font-extrabold text-[#287DFA]'>${dest.priceFrom}</span>
+                    <span className='text-[15px] font-extrabold text-[#287DFA]'>${dest.priceFrom}</span>
                     <span className='text-[10px] text-[#9CA3AF]'>/night</span>
                   </div>
                 </div>
 
                 {/* Highlight pill */}
                 {dest.highlight && (
-                  <div className='mt-2 flex items-center gap-1 bg-[#F0F5FF] rounded-lg px-2 py-1.5'>
+                  <div className='mt-2.5 flex items-center gap-1.5 bg-[#F0F5FF] rounded-xl px-2.5 py-1.5'>
                     <Compass className='w-3 h-3 text-[#287DFA] shrink-0' />
-                    <span className='text-[11px] font-medium text-[#287DFA]'>{dest.highlight}</span>
+                    <span className='text-[11px] font-semibold text-[#287DFA]'>{dest.highlight}</span>
                   </div>
                 )}
               </div>
@@ -245,7 +246,7 @@ export default function DestinationCards() {
         </div>
 
         {/* Mobile CTA */}
-        <div className='flex justify-center mt-6 sm:hidden'>
+        <div className='flex justify-center mt-8 sm:hidden'>
           <Link href='/destinations' className='flex items-center gap-1.5 text-sm font-semibold text-[#287DFA]'>
             View All Provinces <ArrowRight className='w-4 h-4' />
           </Link>
