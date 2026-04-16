@@ -6,28 +6,28 @@ import Link from 'next/link'
 
 const promos = [
   {
-    id: 'member',
+    id: 'rewards',
     icon: Sparkles,
-    text: 'Join AdoraTrip Rewards — earn points on every booking',
+    text: 'Join AdoraTrip Rewards — earn points on every Cambodia booking',
     cta: 'Join Free',
     href: '/rewards',
-    accent: '#287DFA'
+    bg: 'bg-[#287DFA]'
   },
   {
     id: 'app',
     icon: Tag,
-    text: 'App-exclusive: extra 10% off hotels when you book on mobile',
-    cta: 'Get the App',
+    text: 'App-exclusive: extra 10% off hotels in Siem Reap & Phnom Penh',
+    cta: 'Get App',
     href: '/app',
-    accent: '#FFB400'
+    bg: 'bg-[#F59E0B]'
   },
   {
     id: 'deals',
     icon: Sparkles,
-    text: 'Summer Sale is live — flights from $49. Limited seats!',
-    cta: 'See Deals',
+    text: '🌴 Koh Rong flash sale — beach bungalows from $25/night. Limited rooms!',
+    cta: 'Book Now',
     href: '/deals',
-    accent: '#EF4444'
+    bg: 'bg-[#EF4444]'
   }
 ]
 
@@ -41,11 +41,8 @@ export default function PromoBanner() {
   const Icon = promo.icon
 
   return (
-    <div
-      className='relative flex items-center justify-center gap-3 px-4 py-2.5 text-white text-xs sm:text-sm font-medium transition-colors duration-300'
-      style={{ backgroundColor: promo.accent }}
-    >
-      {/* Left pagination dots */}
+    <div className={`relative flex items-center justify-center gap-3 px-4 py-2.5 text-white text-xs sm:text-sm font-medium ${promo.bg} transition-colors duration-300`}>
+      {/* Pagination dots */}
       <div className='hidden sm:flex items-center gap-1 absolute left-4'>
         {promos.map((_, i) => (
           <button
@@ -57,8 +54,7 @@ export default function PromoBanner() {
         ))}
       </div>
 
-      {/* Promo content */}
-      <div className='flex items-center gap-2 max-w-xl text-center'>
+      <div className='flex items-center gap-2 max-w-2xl'>
         <Icon className='w-4 h-4 shrink-0 opacity-90' />
         <span className='opacity-95'>{promo.text}</span>
         <Link
@@ -70,11 +66,10 @@ export default function PromoBanner() {
         </Link>
       </div>
 
-      {/* Dismiss */}
       <button
         onClick={() => setDismissed(true)}
         className='absolute right-3 p-1 rounded hover:bg-white/20 transition-colors duration-200'
-        aria-label='Dismiss banner'
+        aria-label='Dismiss'
       >
         <X className='w-3.5 h-3.5' />
       </button>
