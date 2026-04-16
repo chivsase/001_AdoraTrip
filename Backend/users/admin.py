@@ -49,8 +49,8 @@ class EmailVerificationTokenAdmin(admin.ModelAdmin):
     list_display  = ('user', 'expires_at', 'created_at')
     readonly_fields = ('token', 'expires_at', 'created_at')
 
-
 @admin.register(PasswordResetToken)
 class PasswordResetTokenAdmin(admin.ModelAdmin):
     list_display  = ('user', 'is_used', 'expires_at', 'created_at')
-    readonly_fields = ('token', 'created_at')
+    list_filter   = ('is_used',)
+    readonly_fields = ('token', 'is_used', 'expires_at', 'created_at')

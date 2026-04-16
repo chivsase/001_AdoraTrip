@@ -11,6 +11,22 @@ const verticalMenuData = (): VerticalMenuDataType[] => [
     label: 'About',
     href: '/about',
     icon: 'ri-information-line'
+  },
+  {
+    isSection: true,
+    label: 'Account',
+    children: [
+      {
+        label: 'My Profile',
+        href: '/profile',
+        icon: 'ri-user-3-line'
+      },
+      {
+        label: 'Settings',
+        href: '/settings',
+        icon: 'ri-settings-4-line'
+      }
+    ]
   }
 ]
 

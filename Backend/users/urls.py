@@ -11,6 +11,7 @@ from users.views import (
     LoginView,
     LogoutView,
     MeView,
+    OAuthCallbackView,
     PasswordResetConfirmView,
     PasswordResetRequestView,
     RegisterView,
@@ -34,6 +35,9 @@ urlpatterns = [
 
     # CSRF
     path('csrf/',                 CSRFCookieView.as_view(),         name='csrf'),
+
+    # OAuth callback (JWT bridge after social login)
+    path('oauth/callback/',       OAuthCallbackView.as_view(),      name='oauth-callback'),
 
     # Email verification
     path('email/verify/',                   EmailVerifyView.as_view(),        name='email-verify'),

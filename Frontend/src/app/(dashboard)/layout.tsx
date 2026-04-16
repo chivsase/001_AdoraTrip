@@ -11,6 +11,7 @@ import HorizontalLayout from '@layouts/HorizontalLayout'
 
 // Component Imports
 import Providers from '@components/Providers'
+import AuthGuard from '@components/AuthGuard'
 import Navigation from '@components/layout/vertical/Navigation'
 import Header from '@components/layout/horizontal/Header'
 import Navbar from '@components/layout/vertical/Navbar'
@@ -33,6 +34,7 @@ const Layout = async (props: ChildrenType) => {
 
   return (
     <Providers direction={direction}>
+      <AuthGuard>
       <LayoutWrapper
         systemMode={systemMode}
         verticalLayout={
@@ -51,6 +53,7 @@ const Layout = async (props: ChildrenType) => {
           <i className='ri-arrow-up-line' />
         </Button>
       </ScrollToTop>
+      </AuthGuard>
     </Providers>
   )
 }

@@ -41,7 +41,7 @@ class Booking(models.Model):
     tour         = models.ForeignKey(Tour, on_delete=models.CASCADE, related_name='bookings')
     guest_name   = models.CharField(max_length=100)
     guest_email  = models.EmailField()
-    guest_phone  = models.CharField(max_length=20)
+    guest_phone  = models.CharField(max_length=20, blank=True, default='')
     participants = models.IntegerField(default=1)
     booking_date = models.DateTimeField()
     status       = models.CharField(max_length=20, choices=BOOKING_STATUS_CHOICES, default='pending')

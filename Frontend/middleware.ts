@@ -12,7 +12,7 @@ import type { NextRequest } from 'next/server'
  * protected pages before the client-side AuthContext kicks in.
  */
 
-const PUBLIC_PATHS = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email']
+const PUBLIC_PATHS = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email', '/oauth/callback']
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl

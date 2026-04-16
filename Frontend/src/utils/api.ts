@@ -1,8 +1,13 @@
+import type { User, LoginResponse, RegisterResponse } from '@/types/authTypes'
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
 
 interface RequestOptions extends Omit<RequestInit, 'body'> {
   body?: Record<string, unknown> | FormData
 }
+
+// Mutex for token refresh — prevents multiple concurrent 401s from each triggering a refresh
+let refreshPromise: Promise<boolean> | null = null
 
 /**
  * Lightweight fetch wrapper for the Django backend.
@@ -38,9 +43,9 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     body: isFormData ? body : body ? JSON.stringify(body) : undefined,
   })
 
-  // On 401, try refreshing the access token once
+  // On 401, try refreshing the access token once (shared mutex)
   if (response.status === 401 && accessToken) {
-    const refreshed = await refreshAccessToken()
+    const refreshed = await (refreshPromise ??= refreshAccessToken().finally(() => { refreshPromise = null }))
 
     if (refreshed) {
       headers['Authorization'] = `Bearer ${localStorage.getItem('access_token')}`
@@ -131,13 +136,13 @@ export class ApiError extends Error {
 
 export const authApi = {
   login: (data: { email: string; password: string }) =>
-    request<{ access: string; refresh: string; user: Record<string, unknown> }>('/auth/login/', {
+    request<LoginResponse>('/auth/login/', {
       method: 'POST',
       body: data as unknown as Record<string, unknown>,
     }),
 
   register: (data: { email: string; password: string; full_name: string; phone?: string }) =>
-    request<{ access: string; refresh: string; user: Record<string, unknown> }>('/auth/register/', {
+    request<RegisterResponse>('/auth/register/', {
       method: 'POST',
       body: data as unknown as Record<string, unknown>,
     }),
@@ -146,18 +151,12 @@ export const authApi = {
     request<{ detail: string }>('/auth/logout/', { method: 'POST' }),
 
   me: () =>
-    request<Record<string, unknown>>('/auth/me/', { method: 'GET' }),
+    request<User>('/auth/me/', { method: 'GET' }),
 
   updateProfile: (data: { full_name?: string; phone?: string }) =>
-    request<Record<string, unknown>>('/auth/me/', {
+    request<User>('/auth/me/', {
       method: 'PATCH',
       body: data as unknown as Record<string, unknown>,
-    }),
-
-  refreshToken: () =>
-    request<{ access: string; refresh: string }>('/auth/token/refresh/', {
-      method: 'POST',
-      body: {},
     }),
 
   verifyEmail: (token: string) =>

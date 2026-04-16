@@ -170,10 +170,16 @@ const LoginV2 = ({ mode }: { mode: Mode }) => {
             </div>
             <Divider className='gap-3'>or</Divider>
             <div className='flex justify-center items-center gap-2'>
-              <IconButton size='small' className='text-facebook'>
-                <i className='ri-facebook-fill' />
-              </IconButton>
-              <IconButton size='small' className='text-googlePlus'>
+              <IconButton
+                size='small'
+                className='text-googlePlus'
+                onClick={() => {
+                  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'
+                  const baseUrl = new URL(apiUrl).origin
+
+                  window.location.href = `${baseUrl}/accounts/google/login/?process=login`
+                }}
+              >
                 <i className='ri-google-fill' />
               </IconButton>
             </div>

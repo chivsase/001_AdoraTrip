@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import status
+from rest_framework.authentication import SessionAuthentication
 from rest_framework.generics import GenericAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -200,7 +201,7 @@ class MeView(GenericAPIView):
     PATCH /api/v1/auth/me/ → update full_name, phone, avatar
     DELETE /api/v1/auth/me/ → soft-delete (GDPR)
     """
-    permission_classes = [IsAuthenticatedAndVerified]
+    permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
         if self.request.method == 'PATCH':
@@ -221,7 +222,7 @@ class MeView(GenericAPIView):
         user.is_active = False
         user.save(update_fields=['is_active'])
         _log(request, 'ACCOUNT_DEACTIVATED', user=user)
-        response = Response({'detail': 'Account deactivated.'}, status=status.HTTP_204_NO_CONTENT)
+        response = Response({'detail': 'Account deactivated.'}, status=status.HTTP_200_OK)
         _clear_refresh_cookie(response)
         return response
 
@@ -421,3 +422,41 @@ class AdminUserDetailView(GenericAPIView):
 
         _log(request, 'ADMIN_USER_UPDATE', user=request.user, target_user=str(pk))
         return Response(AdminUserListSerializer(user).data)
+
+
+# ─── OAuth Callback (JWT bridge) ───────────────────────────────────────────────
+
+class OAuthCallbackView(APIView):
+    """
+    GET /api/v1/auth/oauth/callback/
+    After allauth finishes the social login (Google/Facebook), this view is
+    reached via LOGIN_REDIRECT_URL.  It issues JWT tokens, sets the refresh
+    cookie, and redirects the user to the Next.js frontend with the access
+    token so the SPA can store it in localStorage.
+    """
+    permission_classes = [AllowAny]
+    authentication_classes = [
+        CustomJWTAuthentication,
+        SessionAuthentication,
+    ]
+
+    def get(self, request):
+        from django.shortcuts import redirect as django_redirect
+        from urllib.parse import urlencode
+
+        user = request.user
+        frontend_url = settings.FRONTEND_URL
+
+        if not user or not user.is_authenticated:
+            return django_redirect(f'{frontend_url}/login?error=oauth_failed')
+
+        tokens = get_tokens_for_user(user)
+        _log(request, 'OAUTH_LOGIN', user=user)
+
+        # Build redirect URL with access token
+        params = urlencode({'access_token': tokens['access']})
+        redirect_url = f'{frontend_url}/oauth/callback?{params}'
+
+        response = django_redirect(redirect_url)
+        _set_refresh_cookie(response, tokens['refresh'])
+        return response

@@ -65,7 +65,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         if self.action in ('list',):
             return [IsAuthenticatedAndVerified()]
         if self.action in ('retrieve', 'update', 'partial_update'):
-            return [IsBookingOwner() or IsOrgStaff()]
+            return [IsBookingOwner() | IsOrgStaff()]
         if self.action in ('confirm', 'cancel'):
             return [IsOrgStaff()]
         if self.action == 'pending_bookings':

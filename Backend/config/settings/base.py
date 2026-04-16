@@ -198,6 +198,7 @@ ACCOUNT_ADAPTER               = 'users.adapters.CustomAccountAdapter'
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_EMAIL_REQUIRED        = True
 ACCOUNT_USERNAME_REQUIRED     = False
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None         # CustomUser has no username field
 ACCOUNT_EMAIL_VERIFICATION    = 'mandatory'     # overridden in development.py → 'none'
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
 ACCOUNT_UNIQUE_EMAIL          = True
@@ -206,6 +207,7 @@ ACCOUNT_PASSWORD_MIN_LENGTH   = 8
 
 SOCIALACCOUNT_ADAPTER         = 'users.adapters.CustomSocialAccountAdapter'
 SOCIALACCOUNT_AUTO_SIGNUP     = True
+SOCIALACCOUNT_LOGIN_ON_GET    = True             # skip intermediate "Continue?" page
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'       # trust Google/Facebook emails as verified
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -294,6 +296,11 @@ SERVER_EMAIL          = DEFAULT_FROM_EMAIL
 # Frontend URL (used in email links)
 # ----------------------------------------------------------
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
+
+# After social OAuth login, allauth redirects here → our view issues JWTs and
+# sends the user to the frontend.
+LOGIN_REDIRECT_URL = '/api/v1/auth/oauth/callback/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/api/v1/auth/oauth/callback/'
 
 # ----------------------------------------------------------
 # DRF Spectacular (API Docs)

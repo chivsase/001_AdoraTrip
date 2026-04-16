@@ -1,6 +1,5 @@
 from allauth.account.adapter import DefaultAccountAdapter
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from allauth.core.exceptions import ImmediateHttpResponse
 from django.conf import settings
 
 

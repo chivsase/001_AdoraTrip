@@ -6,7 +6,7 @@ import type { ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 
 import type { AuthContextType, LoginRequest, RegisterRequest, User } from '@/types/authTypes'
-import { authApi, ApiError } from '@/utils/api'
+import { authApi } from '@/utils/api'
 
 export const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       const data = await authApi.me()
 
-      setUser(data as unknown as User)
+      setUser(data)
     } catch {
       // Token is invalid / expired — clear it
       localStorage.removeItem('access_token')
@@ -56,8 +56,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await authApi.login(data)
 
       localStorage.setItem('access_token', response.access)
-      setUser(response.user as unknown as User)
-      router.push('/home')
+      setUser(response.user)
+
+      // Redirect to callbackUrl if present, otherwise /home
+      const params = new URLSearchParams(window.location.search)
+      const callbackUrl = params.get('callbackUrl')
+
+      router.push(callbackUrl || '/home')
     },
     [router]
   )
@@ -67,8 +72,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await authApi.register(data)
 
       localStorage.setItem('access_token', response.access)
-      setUser(response.user as unknown as User)
-      router.push('/home')
+      setUser(response.user)
+
+      // If email is not yet verified (production), direct to verify-email page
+      if (!response.user.is_email_verified) {
+        router.push('/verify-email')
+      } else {
+        router.push('/home')
+      }
     },
     [router]
   )
