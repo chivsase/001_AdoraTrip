@@ -26,7 +26,8 @@
       "Bash(pip install *)",
       "Bash(celery -A config flower --help)",
       "Bash(python manage.py createsuperuser --email admin@adoratour.com)",
-      "Bash(python manage.py shell -c ' *)"
+      "Bash(python manage.py shell -c ' *)",
+      "WebSearch"
     ]
   }
 }

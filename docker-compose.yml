@@ -1,5 +1,3 @@
-version: "3.9"
-
 # =============================================================================
 # AdoraTrip — Full-Stack Development Docker Compose
 # Stack: Django API + Next.js Frontend + PostgreSQL + Redis + Celery + Nginx
@@ -38,6 +36,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 20s      # Give PostgreSQL time to initialise on first boot
     networks:
       - adoratrip_network
 
@@ -62,6 +61,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s      # Redis starts fast; short grace period is enough
     networks:
       - adoratrip_network
 
@@ -76,7 +76,10 @@ services:
       target: development        # Switch to 'production' via prod override
     container_name: adoratrip_api
     restart: unless-stopped
-    command: python manage.py runserver 0.0.0.0:8000
+    # Migrate first, then start the dev server with hot-reload
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./Backend:/app           # Live reload: your code → container
       - static_volume:/app/staticfiles
@@ -163,7 +166,10 @@ services:
       dockerfile: Dockerfile
       target: development
     container_name: adoratrip_celery_beat
-    restart: unless-stopped
+    # on-failure: a crash restarts Beat once. 'unless-stopped' or 'always'
+    # would spin up a second instance if the first is still running, causing
+    # every periodic task to fire twice. One Beat instance per cluster — always.
+    restart: on-failure
     command: celery -A config.celery beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     volumes:
       - ./Backend:/app
@@ -267,7 +273,7 @@ services:
   # Access: http://localhost:5050
   # ---------------------------------------------------------------------------
   pgadmin:
-    image: dpage/pgadmin4:latest
+    image: dpage/pgadmin4:8
     container_name: adoratrip_pgadmin
     restart: unless-stopped
     environment:

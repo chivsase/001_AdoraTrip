@@ -1,19 +1,26 @@
-version: "3.9"
-
 # =============================================================================
 # AdoraTrip — Production Docker Compose Override
 #
 # Usage (always layer on top of base compose):
 #   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 #
-# This file only declares what changes from the dev compose.
-# Everything not listed here inherits from docker-compose.yml.
+# This file only declares what changes from docker-compose.yml.
+# Everything not listed here inherits from the base file.
 # =============================================================================
 
 services:
 
   # ---------------------------------------------------------------------------
-  # Django API — production build + gunicorn + entrypoint
+  # Django API — production build
+  #
+  # IMPORTANT: 'command: null' resets the dev command set in docker-compose.yml.
+  # Without this, Compose inherits the dev 'sh -c "migrate && runserver"'
+  # command and passes it to the production ENTRYPOINT — running runserver
+  # instead of gunicorn and migrating twice.
+  #
+  # With null, Docker uses the Dockerfile's CMD:
+  #   ENTRYPOINT ["/entrypoint.sh"]  → runs migrate + collectstatic + superuser
+  #   CMD ["gunicorn", ...]          → starts gunicorn after entrypoint completes
   # ---------------------------------------------------------------------------
   api:
     build:
@@ -21,8 +28,11 @@ services:
       dockerfile: Dockerfile
       target: production
     restart: always
+    command: null            # ← CRITICAL: reset dev command; use Dockerfile CMD
     volumes:
-      # No source code mount in prod — image is self-contained
+      # Source code mount removed — the production image is self-contained.
+      # Named volumes are still required: api needs to WRITE staticfiles,
+      # and nginx needs to READ them from the same volume.
       - static_volume:/app/staticfiles
       - media_volume:/app/mediafiles
     environment:
@@ -34,7 +44,15 @@ services:
           memory: 2G
 
   # ---------------------------------------------------------------------------
-  # Django Channels — production build
+  # Django Channels — Daphne ASGI / WebSocket
+  #
+  # entrypoint: "" skips the production ENTRYPOINT entirely.
+  # Migrations and collectstatic are handled once by the 'api' service above.
+  # Running entrypoint.sh here too would cause a race condition where both
+  # services attempt 'collectstatic --clear' simultaneously.
+  #
+  # depends_on api: service_healthy ensures migrations are committed to the DB
+  # before Daphne starts accepting WebSocket connections.
   # ---------------------------------------------------------------------------
   websocket:
     build:
@@ -42,12 +60,17 @@ services:
       dockerfile: Dockerfile
       target: production
     restart: always
+    entrypoint: ""           # ← Skip entrypoint.sh; api already migrated
     volumes: []              # No source mount in prod
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.production
+    depends_on:
+      api:
+        condition: service_healthy   # Wait for api (+ its migrations) to be healthy
 
   # ---------------------------------------------------------------------------
-  # Celery Worker — production build, higher concurrency
+  # Celery Worker — background tasks
+  # Same pattern: skip entrypoint, wait for api to be healthy first.
   # ---------------------------------------------------------------------------
   celery_worker:
     build:
@@ -55,10 +78,14 @@ services:
       dockerfile: Dockerfile
       target: production
     restart: always
-    volumes: []              # No source mount in prod
+    entrypoint: ""           # ← Skip entrypoint.sh
+    volumes: []
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.production
     command: celery -A config.celery worker --loglevel=warning --concurrency=8 -Q default,emails,payments,reports
+    depends_on:
+      api:
+        condition: service_healthy
     deploy:
       resources:
         limits:
@@ -66,17 +93,23 @@ services:
           memory: 2G
 
   # ---------------------------------------------------------------------------
-  # Celery Beat — production build
+  # Celery Beat — periodic task scheduler
+  # Only one instance should EVER run. 'restart: on-failure' (not always)
+  # prevents a crash-loop from spawning multiple schedulers.
   # ---------------------------------------------------------------------------
   celery_beat:
     build:
       context: ./Backend
       dockerfile: Dockerfile
       target: production
-    restart: always
-    volumes: []              # No source mount in prod
+    restart: on-failure      # Never restart into a second instance (duplicate tasks)
+    entrypoint: ""           # ← Skip entrypoint.sh
+    volumes: []
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.production
+    depends_on:
+      api:
+        condition: service_healthy
 
   # ---------------------------------------------------------------------------
   # Next.js Frontend — production standalone build
@@ -85,7 +118,7 @@ services:
     build:
       context: ./Frontend
       dockerfile: Dockerfile
-      target: runner          # Minimal standalone production image
+      target: runner          # Minimal standalone image (~200MB)
     restart: always
     volumes: []              # No source mount in prod; image is self-contained
     environment:
@@ -93,12 +126,12 @@ services:
       NEXT_TELEMETRY_DISABLED: 1
 
   # ---------------------------------------------------------------------------
-  # PostgreSQL — production constraints
+  # PostgreSQL — production resource limits + explicit password
   # ---------------------------------------------------------------------------
   db:
     restart: always
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}   # Must be set explicitly; no fallback
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}   # Must be set; no fallback in prod
     deploy:
       resources:
         limits:
@@ -106,7 +139,7 @@ services:
           memory: 4G
 
   # ---------------------------------------------------------------------------
-  # Redis — production constraints + password
+  # Redis — production limits + authentication
   # ---------------------------------------------------------------------------
   redis:
     restart: always
@@ -122,7 +155,7 @@ services:
           memory: 1G
 
   # ---------------------------------------------------------------------------
-  # Nginx — production config with HTTPS + Let's Encrypt
+  # Nginx — switch to production TLS config
   # ---------------------------------------------------------------------------
   nginx:
     restart: always

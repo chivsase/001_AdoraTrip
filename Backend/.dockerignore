@@ -22,10 +22,17 @@ env/
 ENV/
 
 # --- Django generated directories ---
-# Staticfiles are collected inside the container, not copied in
+# staticfiles are collected inside the container by entrypoint.sh
 staticfiles/
 mediafiles/
 db.sqlite3
+db.sqlite3-journal
+
+# --- Celery Beat runtime files ---
+# Beat writes these to the working directory at startup
+celerybeat-schedule
+celerybeat-schedule.db
+celerybeat.pid
 
 # --- Logs ---
 *.log

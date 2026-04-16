@@ -1,44 +1,92 @@
 #!/bin/sh
-# ============================================================
-# AdoraTrip — Docker Entrypoint Script
-# Runs migrations, collects static files, then starts server
-# ============================================================
+# =============================================================================
+# AdoraTrip — Docker Entrypoint (Production)
+# Used only in the 'production' Dockerfile stage.
+# Development containers (runserver) skip this and run commands directly.
+#
+# Sequence:
+#   1. Wait for PostgreSQL to be ready
+#   2. Run database migrations
+#   3. Collect static files
+#   4. Create superuser if it doesn't exist
+#   5. Hand off to CMD (gunicorn or daphne)
+# =============================================================================
 
 set -e
 
-echo "==> Waiting for database..."
-until python -c "
-import os, psycopg2
+# ---------------------------------------------------------------------------
+# 1. Wait for PostgreSQL
+# Polls until psycopg2 can open a connection. DATABASE_URL must be set.
+# ---------------------------------------------------------------------------
+echo "[entrypoint] Waiting for PostgreSQL..."
+
+max_retries=30
+retry_count=0
+
+until python - <<'EOF'
+import os, sys
+import psycopg2
+
+url = os.environ.get("DATABASE_URL", "")
+if not url:
+    print("[entrypoint] DATABASE_URL is not set — cannot connect to database", file=sys.stderr)
+    sys.exit(1)
+
 try:
-    psycopg2.connect(os.environ.get('DATABASE_URL'))
-    print('Database ready')
-except Exception as e:
-    print(f'Database not ready: {e}')
-    exit(1)
-"; do
-  echo "    Database not ready — retrying in 2s..."
+    conn = psycopg2.connect(url)
+    conn.close()
+    print("[entrypoint] PostgreSQL is ready.")
+except Exception as exc:
+    print(f"[entrypoint] Not ready yet: {exc}", file=sys.stderr)
+    sys.exit(1)
+EOF
+do
+  retry_count=$((retry_count + 1))
+  if [ "$retry_count" -ge "$max_retries" ]; then
+    echo "[entrypoint] ERROR: PostgreSQL did not become ready after ${max_retries} attempts. Aborting."
+    exit 1
+  fi
+  echo "[entrypoint] Retrying in 2s... (${retry_count}/${max_retries})"
   sleep 2
 done
 
-echo "==> Running database migrations..."
+# ---------------------------------------------------------------------------
+# 2. Run migrations
+# ---------------------------------------------------------------------------
+echo "[entrypoint] Running database migrations..."
 python manage.py migrate --noinput
 
-echo "==> Collecting static files..."
+# ---------------------------------------------------------------------------
+# 3. Collect static files
+# ---------------------------------------------------------------------------
+echo "[entrypoint] Collecting static files..."
 python manage.py collectstatic --noinput --clear
 
-echo "==> Creating superuser if not exists..."
-python manage.py shell -c "
-from django.contrib.auth import get_user_model
-User = get_user_model()
-if not User.objects.filter(email='${DJANGO_SUPERUSER_EMAIL:-admin@adoratrip.com}').exists():
-    User.objects.create_superuser(
-        email='${DJANGO_SUPERUSER_EMAIL:-admin@adoratrip.com}',
-        password='${DJANGO_SUPERUSER_PASSWORD:-admin123}',
-    )
-    print('Superuser created')
-else:
-    print('Superuser already exists')
-"
+# ---------------------------------------------------------------------------
+# 4. Create superuser (idempotent — skips if email already exists)
+# ---------------------------------------------------------------------------
+echo "[entrypoint] Ensuring superuser exists..."
+python - <<EOF
+import os
+import django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", os.environ.get("DJANGO_SETTINGS_MODULE", "config.settings.production"))
+django.setup()
 
-echo "==> Starting application..."
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+email    = os.environ.get("DJANGO_SUPERUSER_EMAIL",    "admin@adoratrip.com")
+password = os.environ.get("DJANGO_SUPERUSER_PASSWORD", "change-me-in-production")
+
+if User.objects.filter(email=email).exists():
+    print(f"[entrypoint] Superuser '{email}' already exists — skipping.")
+else:
+    User.objects.create_superuser(email=email, password=password)
+    print(f"[entrypoint] Superuser '{email}' created.")
+EOF
+
+# ---------------------------------------------------------------------------
+# 5. Hand off to CMD (gunicorn / daphne)
+# ---------------------------------------------------------------------------
+echo "[entrypoint] Starting application: $*"
 exec "$@"
