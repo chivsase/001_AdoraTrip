@@ -22,7 +22,11 @@
       "Bash(python manage.py runserver 8000)",
       "Bash(curl -s -c /tmp/adoratour_cookies.txt http://127.0.0.1:8000/api/v1/auth/csrf/)",
       "Bash(python -m json.tool)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(pip install *)",
+      "Bash(celery -A config flower --help)",
+      "Bash(python manage.py createsuperuser --email admin@adoratour.com)",
+      "Bash(python manage.py shell -c ' *)"
     ]
   }
 }
