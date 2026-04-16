@@ -84,6 +84,7 @@ lerna-debug.log*
 Frontend/.next/
 Frontend/out/
 Frontend/.vercel/
+Frontend/.pnpm-store
 
 FrontendUISample/.next/
 FrontendUISample/out/

@@ -21,7 +21,7 @@ export function middleware(request: NextRequest) {
   const isPublicPath = PUBLIC_PATHS.some(path => pathname.startsWith(path))
   const isAssetOrApi = pathname.startsWith('/_next') || pathname.startsWith('/api') || pathname.startsWith('/images') || pathname.includes('.')
 
-  if (isPublicPath || isAssetOrApi) {
+  if (pathname === '/' || isPublicPath || isAssetOrApi) {
     return NextResponse.next()
   }
 

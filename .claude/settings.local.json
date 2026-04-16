@@ -27,7 +27,9 @@
       "Bash(celery -A config flower --help)",
       "Bash(python manage.py createsuperuser --email admin@adoratour.com)",
       "Bash(python manage.py shell -c ' *)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(grep -l \"'use client'\" c:/wamp64/www/AdoraTrip/Frontend/src/components/landing/*.tsx)",
+      "Bash(grep -rL \"'use client'\" c:/wamp64/www/AdoraTrip/Frontend/src/components/landing/*.tsx)"
     ]
   }
 }

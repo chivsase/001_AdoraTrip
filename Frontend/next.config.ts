@@ -7,13 +7,13 @@ const nextConfig: NextConfig = {
   output: 'standalone',
 
   basePath: process.env.BASEPATH,
-  redirects: async () => {
-    return [
+
+  images: {
+    remotePatterns: [
       {
-        source: '/',
-        destination: '/home',
-        permanent: true,
-        locale: false
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        pathname: '/**'
       }
     ]
   }
