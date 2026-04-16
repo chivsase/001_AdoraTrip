@@ -58,10 +58,17 @@ CSRF_COOKIE_SECURE             = True
 JWT_REFRESH_COOKIE_SECURE      = True
 
 # ----------------------------------------------------------
-# Email (SendGrid)
+# Email — SendGrid via SMTP relay
+# Uses Django's built-in SMTP backend (no extra packages required).
+# SendGrid SMTP credentials: host=smtp.sendgrid.net, user='apikey',
+# password=<SENDGRID_API_KEY from .env>
 # ----------------------------------------------------------
-EMAIL_BACKEND    = 'sendgrid_backend.SendgridBackend'
-SENDGRID_API_KEY = config('SENDGRID_API_KEY')
+EMAIL_BACKEND       = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST          = 'smtp.sendgrid.net'
+EMAIL_PORT          = 587
+EMAIL_USE_TLS       = True
+EMAIL_HOST_USER     = 'apikey'
+EMAIL_HOST_PASSWORD = config('SENDGRID_API_KEY')
 
 # ----------------------------------------------------------
 # Sentry

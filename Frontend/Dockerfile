@@ -44,6 +44,12 @@ RUN corepack enable
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
+# CI=true tells pnpm (and other tools) to skip interactive prompts.
+# pnpm 10+ aborts in non-TTY environments (Docker builds, CI pipelines) when
+# it needs to remove the modules directory. CI=true disables that guard.
+# This is the standard way to run pnpm inside Docker / GitHub Actions / etc.
+ENV CI=true
+
 WORKDIR /app
 
 # =============================================================================
@@ -74,8 +80,11 @@ RUN --mount=type=cache,id=adoratrip-pnpm,target=/root/.local/share/pnpm/store,sh
     pnpm fetch --frozen-lockfile
 
 # Step 2: Install from the store (--offline: never hit the network).
+# --ignore-scripts: skip postinstall (which runs 'build:icons') because the
+# source files (src/assets/) are not copied yet at this stage. The builder
+# and development stages run 'build:icons' explicitly after COPY . .
 RUN --mount=type=cache,id=adoratrip-pnpm,target=/root/.local/share/pnpm/store,sharing=locked \
-    pnpm install --frozen-lockfile --offline
+    pnpm install --frozen-lockfile --offline --ignore-scripts
 
 # =============================================================================
 # Stage: builder — TypeScript compile + Next.js production bundle
@@ -106,6 +115,11 @@ ARG BASEPATH
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL} \
     NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL} \
     BASEPATH=${BASEPATH}
+
+# Generate Iconify CSS bundle from the icon set sources.
+# Must run AFTER 'COPY . .' so src/assets/iconify-icons/ exists.
+# Skipped in the deps stage (--ignore-scripts) to avoid a missing-file error.
+RUN pnpm run build:icons
 
 # 'next build' reads output: 'standalone' from next.config.ts and produces:
 #   .next/standalone/         — complete mini-server (server.js + minimal deps)
@@ -181,9 +195,10 @@ FROM base AS development
 COPY --link package.json pnpm-lock.yaml .npmrc ./
 
 # Reuse the same pnpm store populated by the deps stage.
+# --ignore-scripts: source files are not here yet; build:icons runs at startup.
 RUN --mount=type=cache,id=adoratrip-pnpm,target=/root/.local/share/pnpm/store,sharing=locked \
     pnpm fetch --frozen-lockfile \
- && pnpm install --frozen-lockfile --offline
+ && pnpm install --frozen-lockfile --offline --ignore-scripts
 
 # Source is overridden by the volume mount in docker-compose; this COPY just
 # ensures the image is self-sufficient if run without a compose override.
@@ -194,5 +209,8 @@ ENV NODE_ENV=development
 
 EXPOSE 3000
 
-# 'pnpm dev' resolves to 'next dev --turbopack' via package.json#scripts.
-CMD ["pnpm", "dev"]
+# build:icons runs first so the Iconify CSS bundle exists before Next.js starts.
+# When docker-compose volume-mounts the host source tree over /app, the host
+# files take precedence — running build:icons here ensures the bundle is
+# regenerated inside the container regardless of what the host has.
+CMD ["sh", "-c", "pnpm run build:icons && pnpm dev"]

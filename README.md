@@ -265,8 +265,9 @@ docker compose --profile tools up --build
 | Django API (direct) | http://localhost:8000 |
 | Next.js (direct) | http://localhost:3000 |
 | Django Admin | http://localhost/admin/ |
-| API Docs (Swagger) | http://localhost/api/v1/schema/swagger-ui/ |
-| API Docs (Redoc) | http://localhost/api/v1/schema/redoc/ |
+| API Docs (Swagger) | http://localhost/api/docs/ |
+| API Docs (ReDoc) | http://localhost/api/docs/redoc/ |
+| OpenAPI schema JSON | http://localhost/api/schema/ |
 | Celery Flower | http://localhost:5555 (tools profile) |
 | pgAdmin | http://localhost:5050 (tools profile) |
 | WebSocket (direct) | ws://localhost:8001 |
@@ -516,15 +517,15 @@ Applied to the user globally across the platform:
 
 | Role | Description |
 |------|-------------|
-| `SUPER_ADMIN` | Full platform control |
-| `PLATFORM_ADMIN` | Platform management |
-| `SUPPORT_AGENT` | Customer support |
-| `CONTENT_MODERATOR` | Content review |
-| `PARTNER_OWNER` | Owns one or more partner orgs |
-| `PARTNER_MANAGER` | Manages a partner org |
-| `PARTNER_STAFF` | Staff member of a partner org |
-| `VERIFIED_TRAVELER` | Verified traveler account |
-| `TRAVELER` | Standard registered user |
+| `SUPER_ADMIN` | Full platform control, can suspend users and orgs |
+| `PLATFORM_STAFF` | Platform moderation and user management |
+| `PARTNER_OWNER` | Owns one or more partner organizations |
+| `PARTNER_MANAGER` | Manages a partner org (bookings, inventory, pricing) |
+| `PARTNER_STAFF` | Staff member of a partner org (view bookings, check-in) |
+| `PARTNER_FINANCE` | Finance access within a partner org (revenue reports) |
+| `LOCAL_GUIDE` | Licensed local guide profile |
+| `TRANSPORT_PROVIDER` | Vehicle fleet / transport company |
+| `TRAVELER` | Standard registered user (default on registration) |
 
 #### Organization Roles (OrganizationRole)
 
@@ -541,15 +542,16 @@ Applied to a user's membership within a specific `Organization`:
 
 | Class | Grants access to |
 |-------|----------------|
-| `IsPlatformAdmin` | `SUPER_ADMIN`, `PLATFORM_ADMIN` |
-| `IsVerifiedUser` | Any user with `is_email_verified=True` |
-| `IsOrgOwner` | `OWNER` in the current org context |
-| `IsOrgManager` | `OWNER` or `MANAGER` in current org |
-| `IsOrgMember` | Any membership in current org |
-| `IsOrgFinance` | `FINANCE` or `OWNER` in current org |
+| `IsAuthenticatedAndVerified` | Any active user with verified email |
+| `IsSuperAdmin` | `SUPER_ADMIN` only |
+| `IsPlatformStaff` | `SUPER_ADMIN` or `PLATFORM_STAFF` |
+| `IsAnyPartnerRole` | Any `PARTNER_*` platform role |
+| `IsLocalGuide` | `LOCAL_GUIDE` role |
+| `IsTransportProvider` | `TRANSPORT_PROVIDER` role |
+| `IsBookingOwner` | Object-level: traveler who made the booking |
 
-Org context is injected by `OrgContextMiddleware` from the `X-Organization-ID`
-request header and stored in `request.current_org`.
+Org context is injected by `OrgContextMiddleware` from the `X-Organization-Id`
+request header and stored in `request.org` (lazily resolved via `OrgContextMiddleware`).
 
 ### 6.5 Organization Multi-Tenancy
 
@@ -583,9 +585,9 @@ All endpoints are prefixed with `/api/v1/`. The API follows REST conventions and
 returns JSON. Authentication uses `Authorization: Bearer <token>` unless noted.
 
 Full interactive documentation:
-- **Swagger UI:** `/api/v1/schema/swagger-ui/`
-- **ReDoc:** `/api/v1/schema/redoc/`
-- **OpenAPI schema:** `/api/v1/schema/`
+- **Swagger UI:** `/api/docs/`
+- **ReDoc:** `/api/docs/redoc/`
+- **OpenAPI schema (JSON):** `/api/schema/`
 
 #### Health Check
 
@@ -593,23 +595,28 @@ Full interactive documentation:
 |--------|----------|------|-------------|
 | GET | `/api/v1/health/` | None | DB connectivity check. Returns `{"status":"ok"}` (200) or `{"status":"error"}` (503) |
 
-#### Authentication (`/api/v1/users/`)
+#### Authentication (`/api/v1/auth/`)
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
-| POST | `/api/v1/users/register/` | None | Register new user |
-| POST | `/api/v1/users/login/` | None | Login → access token + refresh cookie |
-| POST | `/api/v1/users/logout/` | Bearer | Invalidate tokens (Redis blocklist) |
-| POST | `/api/v1/users/token/refresh/` | Cookie | Exchange refresh cookie → new access token |
-| GET | `/api/v1/users/profile/` | Bearer | Get current user profile |
-| PATCH | `/api/v1/users/profile/` | Bearer | Update profile |
-| POST | `/api/v1/users/verify-email/` | None | Verify email with token |
-| POST | `/api/v1/users/resend-verification/` | Bearer | Resend verification email |
-| POST | `/api/v1/users/change-password/` | Bearer | Change password |
+| POST | `/api/v1/auth/register/` | None | Register new user |
+| POST | `/api/v1/auth/login/` | None | Login → access token + refresh cookie |
+| POST | `/api/v1/auth/logout/` | Bearer | Invalidate tokens (Redis blocklist) |
+| POST | `/api/v1/auth/token/refresh/` | Cookie | Exchange refresh cookie → new access token |
+| GET/PATCH/DELETE | `/api/v1/auth/me/` | Bearer | Get / update profile / deactivate account |
+| GET | `/api/v1/auth/csrf/` | None | Set CSRF cookie (call on app load) |
+| POST | `/api/v1/auth/email/verify/` | None | Verify email with one-time token |
+| POST | `/api/v1/auth/email/resend-verification/` | Bearer | Resend verification email |
+| POST | `/api/v1/auth/password/reset/request/` | None | Request password reset link |
+| POST | `/api/v1/auth/password/reset/confirm/` | None | Confirm reset with token + new password |
+| POST | `/api/v1/auth/password/change/` | Bearer | Change password (logged-in users) |
+| GET | `/api/v1/auth/admin/users/` | Bearer + PlatformStaff | List all users |
+| PATCH | `/api/v1/auth/admin/users/{id}/` | Bearer + SuperAdmin | Update user role / suspend |
 
 **Register example:**
+
 ```bash
-curl -X POST http://localhost/api/v1/users/register/ \
+curl -X POST http://localhost/api/v1/auth/register/ \
   -H "Content-Type: application/json" \
   -d '{
     "email": "traveler@example.com",
@@ -621,8 +628,9 @@ curl -X POST http://localhost/api/v1/users/register/ \
 ```
 
 **Login example:**
+
 ```bash
-curl -X POST http://localhost/api/v1/users/login/ \
+curl -X POST http://localhost/api/v1/auth/login/ \
   -H "Content-Type: application/json" \
   -c cookies.txt \
   -d '{"email": "traveler@example.com", "password": "SecurePass123!"}'

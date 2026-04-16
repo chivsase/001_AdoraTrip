@@ -3,56 +3,60 @@ from django.utils.functional import SimpleLazyObject
 
 class OrgContextMiddleware:
     """
-    Attaches request.org and request.org_role after authentication.
+    Attaches request.org and request.org_role to every request.
+
+    Uses SimpleLazyObject so the database lookup is deferred until the first
+    time a view (or permission class) accesses request.org. This is critical
+    for DRF + JWT: at middleware setup time request.user is still AnonymousUser
+    because DRF authenticates during view dispatch. By the time the lazy getter
+    fires, DRF will have set request._request.user to the authenticated user.
 
     Rules:
-    - If user belongs to exactly one active org → auto-select it.
-    - If user belongs to multiple orgs → read X-Organization-Id header.
-    - Non-partner roles (TRAVELER, GUIDE, etc.) → request.org = None.
+    - One active membership  → auto-select that org.
+    - Multiple memberships   → read X-Organization-Id request header.
+    - No memberships / anon  → request.org is None.
 
-    Views that need the org context use request.org directly.
+    org_role is set as a side-effect when the lazy org is first resolved.
     """
 
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        request.org      = None
         request.org_role = None
+        request.org = SimpleLazyObject(lambda: self._resolve_org(request))
+        return self.get_response(request)
 
-        response = self.get_response(request)
-
-        # Attach after auth middleware has populated request.user
-        if hasattr(request, 'user') and request.user.is_authenticated:
-            self._attach_org_context(request)
-
-        return response
-
-    def _attach_org_context(self, request):
+    def _resolve_org(self, request):
+        """Resolve and return the active Organization for this request, or None."""
         from organizations.models import OrganizationMembership
+
+        user = request.user  # DRF sets this on the underlying HttpRequest during dispatch
+        if not user or not user.is_authenticated:
+            return None
 
         memberships = list(
             OrganizationMembership.objects.filter(
-                user=request.user, is_active=True
+                user=user, is_active=True
             ).select_related('organization')
         )
 
         if not memberships:
-            return
+            return None
 
         if len(memberships) == 1:
-            request.org      = memberships[0].organization
             request.org_role = memberships[0].role
-            return
+            return memberships[0].organization
 
-        # Multiple orgs: use header to pick context
+        # Multiple orgs: client must supply X-Organization-Id header
         org_id = request.headers.get('X-Organization-Id')
         if org_id:
             for m in memberships:
                 if str(m.organization_id) == org_id:
-                    request.org      = m.organization
                     request.org_role = m.role
-                    return
+                    return m.organization
+
+        return None
 
 
 class AuditLogMiddleware:

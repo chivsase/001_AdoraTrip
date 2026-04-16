@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
 from django.db import connection
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 
 def health_check(request):
@@ -35,9 +35,10 @@ urlpatterns = [
     # Health check — used by Docker HEALTHCHECK and load balancers
     path('api/v1/health/', health_check, name='health'),
 
-    # API Documentation (disable in production via Nginx)
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    # API Documentation (disable in production via Nginx or set SERVE_INCLUDE_SCHEMA=False)
+    path('api/schema/',         SpectacularAPIView.as_view(),                           name='schema'),
+    path('api/docs/',           SpectacularSwaggerView.as_view(url_name='schema'),      name='swagger-ui'),
+    path('api/docs/redoc/',     SpectacularRedocView.as_view(url_name='schema'),        name='redoc'),
 
     # allauth (handles social OAuth redirects)
     path('accounts/', include('allauth.urls')),

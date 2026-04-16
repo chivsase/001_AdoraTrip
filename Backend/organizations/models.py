@@ -1,5 +1,6 @@
 import uuid
 import secrets
+from datetime import timedelta
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
@@ -168,7 +169,7 @@ class OrganizationInvitation(models.Model):
             role=role,
             token=secrets.token_urlsafe(32),
             invited_by=invited_by,
-            expires_at=timezone.now() + timezone.timedelta(days=7),
+            expires_at=timezone.now() + timedelta(days=7),
         )
 
     def is_valid(self):

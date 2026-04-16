@@ -131,11 +131,15 @@ class LoginView(TokenObtainPairView):
         response = super().post(request, *args, **kwargs)
         if response.status_code == 200:
             _set_refresh_cookie(response, response.data['refresh'])
-            # Update last login IP
-            user = User.objects.get(email=request.data.get('email', '').lower())
-            user.last_login_ip = request.META.get('REMOTE_ADDR')
-            user.save(update_fields=['last_login_ip'])
-            _log(request, 'LOGIN', user=user)
+            # Update last login IP — use filter to avoid DoesNotExist if email
+            # is missing or was normalised differently by the serializer.
+            try:
+                user = User.objects.get(email=request.data.get('email', '').lower())
+                user.last_login_ip = request.META.get('REMOTE_ADDR')
+                user.save(update_fields=['last_login_ip'])
+                _log(request, 'LOGIN', user=user)
+            except User.DoesNotExist:
+                pass
         return response
 
 
