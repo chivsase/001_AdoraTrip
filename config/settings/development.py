@@ -1,5 +1,5 @@
 """
-AdoraTour — Development Settings
+AdoraTrip — Development Settings
 """
 from .base import *
 

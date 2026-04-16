@@ -23,14 +23,14 @@ def send_verification_email(self, user_id: str):
 
     try:
         send_mail(
-            subject='Verify your AdoraTour email address',
+            subject='Verify your AdoraTrip email address',
             message=(
                 f'Hi {user.full_name or user.email},\n\n'
                 f'Please verify your email by clicking the link below:\n\n'
                 f'{verify_url}\n\n'
                 f'This link expires in 24 hours.\n\n'
                 f'If you did not create an account, please ignore this email.\n\n'
-                f'— The AdoraTour Team'
+                f'— The AdoraTrip Team'
             ),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],
@@ -57,14 +57,14 @@ def send_password_reset_email(self, user_id: str):
 
     try:
         send_mail(
-            subject='Reset your AdoraTour password',
+            subject='Reset your AdoraTrip password',
             message=(
                 f'Hi {user.full_name or user.email},\n\n'
                 f'You requested a password reset. Click the link below:\n\n'
                 f'{reset_url}\n\n'
                 f'This link expires in 1 hour.\n\n'
                 f'If you did not request this, please ignore this email.\n\n'
-                f'— The AdoraTour Team'
+                f'— The AdoraTrip Team'
             ),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[user.email],

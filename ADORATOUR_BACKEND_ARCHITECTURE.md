@@ -1,4 +1,4 @@
-# AdoraTour — Cambodia Travel Super App
+# AdoraTrip — Cambodia Travel Super App
 ## Full Backend Architecture (20,000 Users Scale)
 
 > **Platform Vision:** A unified digital platform that aggregates hotels, homestays, tours, transportation, attractions, local guides, and travel services into one integrated booking ecosystem for travelers visiting Cambodia.
@@ -35,7 +35,7 @@
 
 ## 1. Executive Summary
 
-**AdoraTour** is a full-scale Cambodia Travel Super App — combining an OTA (Online Travel Agency) with a Marketplace model. It serves:
+**AdoraTrip** is a full-scale Cambodia Travel Super App — combining an OTA (Online Travel Agency) with a Marketplace model. It serves:
 
 | User Type | Role | Access |
 |-----------|------|--------|
@@ -139,8 +139,8 @@
 ## 4. Project Structure (Actual)
 
 ```
-AdoraTour/
-├── config/                          # ← Replaces adoratour_api/settings.py
+AdoraTrip/
+├── config/                          # ← Replaces adoratrip_api/settings.py
 │   ├── __init__.py                  # Imports celery_app at startup (critical for eager tasks)
 │   ├── celery.py                    # Celery app instance
 │   ├── settings/
@@ -258,7 +258,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 ┌─────────────────────────────────────────────────┐
 │  Refresh Token (30 days) — HttpOnly cookie       │
-│  Cookie: adoratour_refresh                       │
+│  Cookie: adoratrip_refresh                       │
 │  SameSite=Lax | HttpOnly=True | Secure (prod)    │
 │                                                  │
 │  Rotation: each /token/refresh/ invalidates old  │
@@ -1032,7 +1032,7 @@ At 100k+ users and 10k+ properties, migrate to Elasticsearch for:
 ### AWS S3 Structure (Phase 2)
 
 ```
-adoratour-media/
+adoratrip-media/
 ├── avatars/{user_id}.jpg
 ├── properties/{property_id}/
 │   ├── main.jpg
@@ -1052,7 +1052,7 @@ adoratour-media/
 ```python
 # production.py
 DEFAULT_FILE_STORAGE    = 'storages.backends.s3boto3.S3Boto3Storage'
-AWS_STORAGE_BUCKET_NAME = 'adoratour-media'
+AWS_STORAGE_BUCKET_NAME = 'adoratrip-media'
 AWS_S3_REGION_NAME      = 'ap-southeast-1'
 AWS_S3_FILE_OVERWRITE   = False
 AWS_DEFAULT_ACL         = None   # block all public ACLs; use presigned URLs
@@ -1167,11 +1167,11 @@ def platform_analytics_overview(request): ...
 |---------|-------|------|-------|
 | `db` | postgres:16 | 5432 | Volume-persisted |
 | `redis` | redis:7 | 6379 | 3 DB indexes used |
-| `api` | local/adoratour | 8000 | Gunicorn 4 workers |
-| `websocket` | local/adoratour | 8001 | Daphne (Phase 2) |
-| `celery_worker` | local/adoratour | — | queues: default,emails,payments,reports |
-| `celery_beat` | local/adoratour | — | DB-backed scheduler |
-| `flower` | local/adoratour | 5555 | Celery monitoring (dev tools profile) |
+| `api` | local/adoratrip | 8000 | Gunicorn 4 workers |
+| `websocket` | local/adoratrip | 8001 | Daphne (Phase 2) |
+| `celery_worker` | local/adoratrip | — | queues: default,emails,payments,reports |
+| `celery_beat` | local/adoratrip | — | DB-backed scheduler |
+| `flower` | local/adoratrip | 5555 | Celery monitoring (dev tools profile) |
 | `nginx` | nginx:stable | 80/443 | SSL termination + rate limits |
 | `pgadmin` | pgadmin4 | 5050 | DB browser (dev tools profile) |
 
@@ -1180,7 +1180,7 @@ def platform_analytics_overview(request): ...
 ```bash
 # Required in all environments
 SECRET_KEY=change-me-in-production
-ALLOWED_HOSTS=localhost,127.0.0.1,adoratour.com
+ALLOWED_HOSTS=localhost,127.0.0.1,adoratrip.com
 REDIS_URL=redis://redis:6379/0
 FRONTEND_URL=http://localhost:3000
 
@@ -1191,17 +1191,17 @@ FACEBOOK_APP_ID=xxx
 FACEBOOK_APP_SECRET=xxx
 
 # Production only
-DATABASE_URL=postgres://user:pass@db:5432/adoratour_db
+DATABASE_URL=postgres://user:pass@db:5432/adoratrip_db
 DJANGO_SETTINGS_MODULE=config.settings.production
 JWT_REFRESH_COOKIE_SECURE=True
 AWS_ACCESS_KEY_ID=xxx
 AWS_SECRET_ACCESS_KEY=xxx
-AWS_STORAGE_BUCKET_NAME=adoratour-media
+AWS_STORAGE_BUCKET_NAME=adoratrip-media
 AWS_S3_REGION_NAME=ap-southeast-1
 STRIPE_SECRET_KEY=sk_live_xxx
 STRIPE_WEBHOOK_SECRET=whsec_xxx
 SENDGRID_API_KEY=SG.xxx
-DEFAULT_FROM_EMAIL=AdoraTour <noreply@adoratour.com>
+DEFAULT_FROM_EMAIL=AdoraTrip <noreply@adoratrip.com>
 SENTRY_DSN=https://xxx@sentry.io/yyy
 ```
 
@@ -1272,7 +1272,7 @@ LOGGING = {
     'handlers': {
         'file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': '/var/log/adoratour/django.log',
+            'filename': '/var/log/adoratrip/django.log',
             'maxBytes': 10 * 1024 * 1024,   # 10 MB
             'backupCount': 5,
         },
@@ -1280,7 +1280,7 @@ LOGGING = {
     },
     'loggers': {
         'django':    {'handlers': ['file', 'console'], 'level': 'WARNING'},
-        'adoratour': {'handlers': ['file', 'console'], 'level': 'INFO'},
+        'adoratrip': {'handlers': ['file', 'console'], 'level': 'INFO'},
         'celery':    {'handlers': ['file'],             'level': 'INFO'},
     },
 }
@@ -1304,7 +1304,7 @@ LOGGING = {
 
 > Auth, RBAC, Organizations — all endpoints live and smoke-tested
 
-- [x] Settings restructured: `adoratour_api/` → `config/settings/{base,development,production}.py`
+- [x] Settings restructured: `adoratrip_api/` → `config/settings/{base,development,production}.py`
 - [x] CustomUser (UUID PK, email auth, PlatformRole)
 - [x] JWT: access 60min + refresh 30d, rotation, blacklist, HttpOnly cookie
 - [x] CustomJWTAuthentication — Redis jti invalidation (all-devices logout)
@@ -1388,6 +1388,6 @@ LOGGING = {
 
 ---
 
-*AdoraTour Backend Architecture — Version 2.0*
+*AdoraTrip Backend Architecture — Version 2.0*
 *Updated April 2026 — Reflects actual implementation state*
 *Cambodia Travel Super App — Django 5.1 + DRF + SimpleJWT + django-allauth + Celery + PostgreSQL + Redis*

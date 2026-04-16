@@ -1,5 +1,5 @@
 """
-AdoraTour — Production Settings
+AdoraTrip — Production Settings
 """
 from .base import *
 import dj_database_url
@@ -31,7 +31,7 @@ CACHES = {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'COMPRESSOR': 'django_redis.compressors.zlib.ZlibCompressor',
         },
-        'KEY_PREFIX': 'adoratour',
+        'KEY_PREFIX': 'adoratrip',
     },
     'axes': {
         'BACKEND': 'django_redis.cache.RedisCache',

@@ -1,5 +1,5 @@
 # ============================================================
-# AdoraTour — Dockerfile
+# AdoraTrip — Dockerfile
 # Multi-stage build: development + production
 # Base: Python 3.12 slim
 # ============================================================
@@ -54,20 +54,20 @@ COPY requirements/production.txt requirements/production.txt
 RUN pip install -r requirements/production.txt
 
 # Create non-root user for security
-RUN groupadd -r adoratour && useradd -r -g adoratour adoratour
+RUN groupadd -r adoratrip && useradd -r -g adoratrip adoratrip
 
 # Copy project files
-COPY --chown=adoratour:adoratour . .
+COPY --chown=adoratrip:adoratrip . .
 
 # Create directories for static and media files
 RUN mkdir -p /app/staticfiles /app/mediafiles && \
-    chown -R adoratour:adoratour /app/staticfiles /app/mediafiles
+    chown -R adoratrip:adoratrip /app/staticfiles /app/mediafiles
 
 # Copy entrypoint script
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-USER adoratour
+USER adoratrip
 
 EXPOSE 8000
 

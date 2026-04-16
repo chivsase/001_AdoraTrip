@@ -1,6 +1,6 @@
 #!/bin/sh
 # ============================================================
-# AdoraTour — Docker Entrypoint Script
+# AdoraTrip — Docker Entrypoint Script
 # Runs migrations, collects static files, then starts server
 # ============================================================
 
@@ -30,9 +30,9 @@ echo "==> Creating superuser if not exists..."
 python manage.py shell -c "
 from django.contrib.auth import get_user_model
 User = get_user_model()
-if not User.objects.filter(email='${DJANGO_SUPERUSER_EMAIL:-admin@adoratour.com}').exists():
+if not User.objects.filter(email='${DJANGO_SUPERUSER_EMAIL:-admin@adoratrip.com}').exists():
     User.objects.create_superuser(
-        email='${DJANGO_SUPERUSER_EMAIL:-admin@adoratour.com}',
+        email='${DJANGO_SUPERUSER_EMAIL:-admin@adoratrip.com}',
         password='${DJANGO_SUPERUSER_PASSWORD:-admin123}',
     )
     print('Superuser created')

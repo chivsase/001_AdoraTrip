@@ -1,7 +1,7 @@
 version: "3.9"
 
 # ============================================================
-# AdoraTour — Development Docker Compose
+# AdoraTrip — Development Docker Compose
 # Cambodia Travel Super App
 # Services: Django API + PostgreSQL + Redis + Celery + Nginx
 # ============================================================
@@ -13,31 +13,31 @@ services:
   # ----------------------------------------------------------
   db:
     image: postgres:16-alpine
-    container_name: adoratour_db
+    container_name: adoratrip_db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-adoratour_db}
-      POSTGRES_USER: ${POSTGRES_USER:-adoratour_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-adoratour_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-adoratrip_db}
+      POSTGRES_USER: ${POSTGRES_USER:-adoratrip_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-adoratrip_pass}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-adoratour_user} -d ${POSTGRES_DB:-adoratour_db}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-adoratrip_user} -d ${POSTGRES_DB:-adoratrip_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - adoratour_network
+      - adoratrip_network
 
   # ----------------------------------------------------------
   # Redis — Cache + Celery Broker + Django Channels Layer
   # ----------------------------------------------------------
   redis:
     image: redis:7-alpine
-    container_name: adoratour_redis
+    container_name: adoratrip_redis
     restart: unless-stopped
     command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
     volumes:
@@ -50,7 +50,7 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - adoratour_network
+      - adoratrip_network
 
   # ----------------------------------------------------------
   # Django Backend — API Server (Gunicorn)
@@ -60,7 +60,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
-    container_name: adoratour_api
+    container_name: adoratrip_api
     restart: unless-stopped
     command: >
       sh -c "python manage.py migrate --noinput &&
@@ -81,7 +81,7 @@ services:
       - "8000:8000"
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.development
-      - DATABASE_URL=postgres://${POSTGRES_USER:-adoratour_user}:${POSTGRES_PASSWORD:-adoratour_pass}@db:5432/${POSTGRES_DB:-adoratour_db}
+      - DATABASE_URL=postgres://${POSTGRES_USER:-adoratrip_user}:${POSTGRES_PASSWORD:-adoratrip_pass}@db:5432/${POSTGRES_DB:-adoratrip_db}
       - REDIS_URL=redis://redis:6379/0
     env_file:
       - .env
@@ -91,7 +91,7 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - adoratour_network
+      - adoratrip_network
 
   # ----------------------------------------------------------
   # Django Channels — ASGI WebSocket Server (Daphne)
@@ -101,7 +101,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
-    container_name: adoratour_websocket
+    container_name: adoratrip_websocket
     restart: unless-stopped
     command: daphne -b 0.0.0.0 -p 8001 config.asgi:application
     volumes:
@@ -110,7 +110,7 @@ services:
       - "8001:8001"
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.development
-      - DATABASE_URL=postgres://${POSTGRES_USER:-adoratour_user}:${POSTGRES_PASSWORD:-adoratour_pass}@db:5432/${POSTGRES_DB:-adoratour_db}
+      - DATABASE_URL=postgres://${POSTGRES_USER:-adoratrip_user}:${POSTGRES_PASSWORD:-adoratrip_pass}@db:5432/${POSTGRES_DB:-adoratrip_db}
       - REDIS_URL=redis://redis:6379/0
     env_file:
       - .env
@@ -120,7 +120,7 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - adoratour_network
+      - adoratrip_network
 
   # ----------------------------------------------------------
   # Celery Worker — Background Jobs
@@ -130,14 +130,14 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
-    container_name: adoratour_celery_worker
+    container_name: adoratrip_celery_worker
     restart: unless-stopped
     command: celery -A config.celery worker --loglevel=info --concurrency=4 -Q default,emails,payments,reports
     volumes:
       - .:/app
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.development
-      - DATABASE_URL=postgres://${POSTGRES_USER:-adoratour_user}:${POSTGRES_PASSWORD:-adoratour_pass}@db:5432/${POSTGRES_DB:-adoratour_db}
+      - DATABASE_URL=postgres://${POSTGRES_USER:-adoratrip_user}:${POSTGRES_PASSWORD:-adoratrip_pass}@db:5432/${POSTGRES_DB:-adoratrip_db}
       - REDIS_URL=redis://redis:6379/0
     env_file:
       - .env
@@ -147,7 +147,7 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - adoratour_network
+      - adoratrip_network
 
   # ----------------------------------------------------------
   # Celery Beat — Scheduled Tasks / Cron
@@ -157,14 +157,14 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
-    container_name: adoratour_celery_beat
+    container_name: adoratrip_celery_beat
     restart: unless-stopped
     command: celery -A config.celery beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
     volumes:
       - .:/app
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings.development
-      - DATABASE_URL=postgres://${POSTGRES_USER:-adoratour_user}:${POSTGRES_PASSWORD:-adoratour_pass}@db:5432/${POSTGRES_DB:-adoratour_db}
+      - DATABASE_URL=postgres://${POSTGRES_USER:-adoratrip_user}:${POSTGRES_PASSWORD:-adoratrip_pass}@db:5432/${POSTGRES_DB:-adoratrip_db}
       - REDIS_URL=redis://redis:6379/0
     env_file:
       - .env
@@ -174,7 +174,7 @@ services:
       redis:
         condition: service_healthy
     networks:
-      - adoratour_network
+      - adoratrip_network
 
   # ----------------------------------------------------------
   # Celery Flower — Task Monitoring UI (dev only)
@@ -184,7 +184,7 @@ services:
       context: .
       dockerfile: Dockerfile
       target: development
-    container_name: adoratour_flower
+    container_name: adoratrip_flower
     restart: unless-stopped
     command: celery -A config.celery flower --port=5555 --basic_auth=${FLOWER_USER:-admin}:${FLOWER_PASSWORD:-admin123}
     ports:
@@ -198,14 +198,14 @@ services:
       - redis
       - celery_worker
     networks:
-      - adoratour_network
+      - adoratrip_network
 
   # ----------------------------------------------------------
   # Nginx — Reverse Proxy + Static Files
   # ----------------------------------------------------------
   nginx:
     image: nginx:1.25-alpine
-    container_name: adoratour_nginx
+    container_name: adoratrip_nginx
     restart: unless-stopped
     ports:
       - "80:80"
@@ -220,17 +220,17 @@ services:
       - api
       - websocket
     networks:
-      - adoratour_network
+      - adoratrip_network
 
   # ----------------------------------------------------------
   # pgAdmin — Database GUI (dev only)
   # ----------------------------------------------------------
   pgadmin:
     image: dpage/pgadmin4:latest
-    container_name: adoratour_pgadmin
+    container_name: adoratrip_pgadmin
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@adoratour.com}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@adoratrip.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin123}
       PGADMIN_CONFIG_SERVER_MODE: "False"
     ports:
@@ -240,7 +240,7 @@ services:
     depends_on:
       - db
     networks:
-      - adoratour_network
+      - adoratrip_network
     profiles:
       - tools
 
@@ -249,20 +249,20 @@ services:
 # ----------------------------------------------------------
 volumes:
   postgres_data:
-    name: adoratour_postgres_data
+    name: adoratrip_postgres_data
   redis_data:
-    name: adoratour_redis_data
+    name: adoratrip_redis_data
   static_volume:
-    name: adoratour_static
+    name: adoratrip_static
   media_volume:
-    name: adoratour_media
+    name: adoratrip_media
   pgadmin_data:
-    name: adoratour_pgadmin
+    name: adoratrip_pgadmin
 
 # ----------------------------------------------------------
 # Networks
 # ----------------------------------------------------------
 networks:
-  adoratour_network:
-    name: adoratour_network
+  adoratrip_network:
+    name: adoratrip_network
     driver: bridge

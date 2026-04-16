@@ -1,5 +1,5 @@
 # ============================================================
-# AdoraTour — Base Python Requirements
+# AdoraTrip — Base Python Requirements
 # ============================================================
 
 # Django Core

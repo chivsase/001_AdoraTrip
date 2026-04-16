@@ -1,5 +1,5 @@
 """
-AdoraTour — Base Settings
+AdoraTrip — Base Settings
 Shared across all environments.
 """
 
@@ -186,7 +186,7 @@ SIMPLE_JWT = {
 }
 
 # Cookie name used for HttpOnly refresh token
-JWT_REFRESH_COOKIE_NAME = 'adoratour_refresh'
+JWT_REFRESH_COOKIE_NAME = 'adoratrip_refresh'
 JWT_REFRESH_COOKIE_SAMESITE = 'Lax'
 JWT_REFRESH_COOKIE_HTTPONLY = True
 JWT_REFRESH_COOKIE_SECURE = config('JWT_REFRESH_COOKIE_SECURE', default=False, cast=bool)
@@ -286,8 +286,8 @@ CELERY_TASK_ROUTES = {
 # ----------------------------------------------------------
 # Email (base — overridden per environment)
 # ----------------------------------------------------------
-DEFAULT_FROM_EMAIL    = config('DEFAULT_FROM_EMAIL', default='AdoraTour <noreply@adoratour.com>')
-EMAIL_SUBJECT_PREFIX  = '[AdoraTour] '
+DEFAULT_FROM_EMAIL    = config('DEFAULT_FROM_EMAIL', default='AdoraTrip <noreply@adoratrip.com>')
+EMAIL_SUBJECT_PREFIX  = '[AdoraTrip] '
 SERVER_EMAIL          = DEFAULT_FROM_EMAIL
 
 # ----------------------------------------------------------
@@ -299,7 +299,7 @@ FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')
 # DRF Spectacular (API Docs)
 # ----------------------------------------------------------
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'AdoraTour API',
+    'TITLE': 'AdoraTrip API',
     'DESCRIPTION': 'Cambodia Travel Super App — REST API',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,

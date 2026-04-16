@@ -1,9 +1,9 @@
 @echo off
-REM AdoraTour API - Development Server Startup Script
+REM AdoraTrip API - Development Server Startup Script
 
 echo.
 echo ====================================
-echo   AdoraTour API - Development Server
+echo   AdoraTrip API - Development Server
 echo ====================================
 echo.
 

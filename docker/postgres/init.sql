@@ -1,5 +1,5 @@
 -- ============================================================
--- AdoraTour — PostgreSQL Initialization Script
+-- AdoraTrip — PostgreSQL Initialization Script
 -- Runs once when the database container is first created
 -- ============================================================
 
@@ -13,4 +13,4 @@ CREATE EXTENSION IF NOT EXISTS "btree_gin";      -- GIN index for B-tree types
 SET timezone = 'Asia/Phnom_Penh';
 
 -- Log
-SELECT 'AdoraTour database initialized successfully' AS status;
+SELECT 'AdoraTrip database initialized successfully' AS status;

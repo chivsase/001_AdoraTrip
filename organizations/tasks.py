@@ -24,14 +24,14 @@ def send_invitation_email(self, invitation_id: str):
 
     try:
         send_mail(
-            subject=f"You've been invited to join {org_name} on AdoraTour",
+            subject=f"You've been invited to join {org_name} on AdoraTrip",
             message=(
                 f'Hi,\n\n'
                 f'{inviter} has invited you to join {org_name} as {role_label}.\n\n'
                 f'Click the link below to accept (valid for 7 days):\n\n'
                 f'{accept_url}\n\n'
                 f'If you did not expect this invitation, please ignore this email.\n\n'
-                f'— The AdoraTour Team'
+                f'— The AdoraTrip Team'
             ),
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[invitation.email],

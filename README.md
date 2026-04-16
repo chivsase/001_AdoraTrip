@@ -1,4 +1,4 @@
-# AdoraTour — Cambodia Travel Super App
+# AdoraTrip — Cambodia Travel Super App
 
 > A production-grade Django REST API powering a unified travel marketplace for Cambodia — Hotels, Homestays, Tour Packages, Local Guides, Transportation, Attractions, and more.
 
@@ -23,7 +23,7 @@
 
 ## Overview
 
-AdoraTour is a B2B2C travel platform:
+AdoraTrip is a B2B2C travel platform:
 
 | Who | What they do |
 |-----|-------------|
@@ -55,7 +55,7 @@ AdoraTour is a B2B2C travel platform:
 ## Project Structure
 
 ```
-AdoraTour/
+AdoraTrip/
 ├── config/                      # Django configuration package
 │   ├── __init__.py              # Imports celery app at startup
 │   ├── celery.py                # Celery app instance
@@ -122,8 +122,8 @@ AdoraTour/
 
 ```bash
 # 1. Clone and enter the project
-git clone <repo-url> AdoraTour
-cd AdoraTour
+git clone <repo-url> AdoraTrip
+cd AdoraTrip
 
 # 2. Create and activate virtual environment
 python -m venv .venv
@@ -206,7 +206,7 @@ ALLOWED_HOSTS=localhost,127.0.0.1         # Comma-separated
 
 # ── Database ──────────────────────────────────────────────
 # Leave blank for SQLite (development default)
-DATABASE_URL=postgres://user:pass@db:5432/adoratour_db
+DATABASE_URL=postgres://user:pass@db:5432/adoratrip_db
 
 # ── Redis ─────────────────────────────────────────────────
 # Leave blank; dev uses locmem cache
@@ -219,7 +219,7 @@ CSRF_TRUSTED_ORIGINS=http://localhost:3000
 
 # ── Email ─────────────────────────────────────────────────
 # Dev: prints to console (EMAIL_BACKEND=console)
-DEFAULT_FROM_EMAIL=AdoraTour <noreply@adoratour.com>
+DEFAULT_FROM_EMAIL=AdoraTrip <noreply@adoratrip.com>
 # Prod: set SENDGRID_API_KEY or EMAIL_HOST/PORT/USER/PASSWORD
 
 # ── Social Auth (Phase 2) ─────────────────────────────────
@@ -231,7 +231,7 @@ FACEBOOK_APP_SECRET=
 # ── AWS S3 (Phase 2) ──────────────────────────────────────
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
-AWS_STORAGE_BUCKET_NAME=adoratour-media
+AWS_STORAGE_BUCKET_NAME=adoratrip-media
 AWS_S3_REGION_NAME=ap-southeast-1
 
 # ── Stripe (Phase 2) ──────────────────────────────────────
@@ -333,7 +333,7 @@ curl -X POST http://localhost:8000/api/v1/auth/register/ \
     "full_name": "Sokha Pich"
   }'
 # → 201: { "user": {...}, "access": "<jwt>", "refresh": "<jwt>" }
-# → HttpOnly cookie: adoratour_refresh=<token>
+# → HttpOnly cookie: adoratrip_refresh=<token>
 ```
 
 ### 3. Authenticated Request
@@ -369,7 +369,7 @@ curl -X POST http://localhost:8000/api/v1/auth/logout/ \
 | Token | Lifetime | Location | Notes |
 |-------|----------|----------|-------|
 | Access | 60 minutes | JSON response body | Store in JS memory (Zustand), never localStorage |
-| Refresh | 30 days | HttpOnly cookie `adoratour_refresh` | Rotated on every use, blacklisted on logout |
+| Refresh | 30 days | HttpOnly cookie `adoratrip_refresh` | Rotated on every use, blacklisted on logout |
 
 ---
 
@@ -515,7 +515,7 @@ python manage.py shell
 from django.contrib.auth import get_user_model
 User = get_user_model()
 u = User.objects.create_superuser(
-    email='admin@adoratour.com',
+    email='admin@adoratrip.com',
     password='AdminPass123!',
     full_name='Admin',
 )
@@ -610,4 +610,4 @@ python manage.py createsuperuser
 
 ## License
 
-This project is proprietary — AdoraTour &copy; 2026. All rights reserved.
+This project is proprietary — AdoraTrip &copy; 2026. All rights reserved.

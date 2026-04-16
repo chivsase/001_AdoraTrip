@@ -30,7 +30,7 @@ class SubscriptionTier(models.TextChoices):
 
 class Organization(models.Model):
     """
-    A partner company on AdoraTour (Hotel, Homestay, Tour Operator, etc.).
+    A partner company on AdoraTrip (Hotel, Homestay, Tour Operator, etc.).
     Users belong to organizations via OrganizationMembership.
     """
     id   = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
