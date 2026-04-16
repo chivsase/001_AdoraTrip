@@ -196,4 +196,5 @@ testem.log
 typings/
 
 # Claude Code session files (not project-specific)
-# .claude/ is kept — it stores project-level settings
+.claude/
+.github/
