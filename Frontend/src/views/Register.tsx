@@ -37,24 +37,28 @@ import { useAuth } from '@/hooks/useAuth'
 // Util Imports
 import { ApiError } from '@/utils/api'
 
-const LoginV2 = ({ mode }: { mode: Mode }) => {
+const RegisterV2 = ({ mode }: { mode: Mode }) => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
+  const [agreeTerms, setAgreeTerms] = useState(false)
   const [error, setError] = useState('')
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Vars
   const darkImg = '/images/pages/auth-v2-mask-dark.png'
   const lightImg = '/images/pages/auth-v2-mask-light.png'
-  const darkIllustration = '/images/illustrations/auth/v2-login-dark.png'
-  const lightIllustration = '/images/illustrations/auth/v2-login-light.png'
-  const borderedDarkIllustration = '/images/illustrations/auth/v2-login-dark-border.png'
-  const borderedLightIllustration = '/images/illustrations/auth/v2-login-light-border.png'
+  const darkIllustration = '/images/illustrations/auth/v2-register-dark.png'
+  const lightIllustration = '/images/illustrations/auth/v2-register-light.png'
+  const borderedDarkIllustration = '/images/illustrations/auth/v2-register-dark-border.png'
+  const borderedLightIllustration = '/images/illustrations/auth/v2-register-light-border.png'
 
   // Hooks
-  const { login } = useAuth()
+  const { register } = useAuth()
   const { settings } = useSettings()
   const authBackground = useImageVariant(mode, lightImg, darkImg)
 
@@ -71,13 +75,31 @@ const LoginV2 = ({ mode }: { mode: Mode }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setFieldErrors({})
     setIsSubmitting(true)
 
     try {
-      await login({ email, password })
+      await register({ email, password, full_name: fullName, phone: phone || undefined })
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.message)
+        // Display field-specific errors if available
+        const data = err.data as Record<string, string[]>
+        const fields: Record<string, string[]> = {}
+        let generalError = ''
+
+        for (const [key, value] of Object.entries(data)) {
+          if (key === 'detail' || key === 'non_field_errors') {
+            generalError = Array.isArray(value) ? value.join(', ') : String(value)
+          } else if (Array.isArray(value)) {
+            fields[key] = value
+          }
+        }
+
+        if (Object.keys(fields).length > 0) {
+          setFieldErrors(fields)
+        }
+
+        setError(generalError || err.message)
       } else {
         setError('An unexpected error occurred. Please try again.')
       }
@@ -85,6 +107,8 @@ const LoginV2 = ({ mode }: { mode: Mode }) => {
       setIsSubmitting(false)
     }
   }
+
+  const getFieldError = (field: string) => fieldErrors[field]?.join(', ') || ''
 
   return (
     <div className='flex bs-full justify-center'>
@@ -115,19 +139,39 @@ const LoginV2 = ({ mode }: { mode: Mode }) => {
         </Link>
         <div className='flex flex-col gap-5 is-full sm:is-auto md:is-full sm:max-is-[400px] md:max-is-[unset]'>
           <div>
-            <Typography variant='h4'>{`Welcome to ${themeConfig.templateName}! 👋🏻`}</Typography>
-            <Typography className='mbs-1'>Please sign-in to your account and start the adventure</Typography>
+            <Typography variant='h4'>Adventure starts here 🚀</Typography>
+            <Typography className='mbs-1'>Make your travel experience easy and fun!</Typography>
           </div>
           {error && <Alert severity='error'>{error}</Alert>}
           <form noValidate autoComplete='off' onSubmit={handleSubmit} className='flex flex-col gap-5'>
             <TextField
               autoFocus
               fullWidth
+              label='Full Name'
+              value={fullName}
+              onChange={e => setFullName(e.target.value)}
+              disabled={isSubmitting}
+              error={!!getFieldError('full_name')}
+              helperText={getFieldError('full_name')}
+            />
+            <TextField
+              fullWidth
               label='Email'
               type='email'
               value={email}
               onChange={e => setEmail(e.target.value)}
               disabled={isSubmitting}
+              error={!!getFieldError('email')}
+              helperText={getFieldError('email')}
+            />
+            <TextField
+              fullWidth
+              label='Phone (optional)'
+              value={phone}
+              onChange={e => setPhone(e.target.value)}
+              disabled={isSubmitting}
+              error={!!getFieldError('phone')}
+              helperText={getFieldError('phone')}
             />
             <TextField
               fullWidth
@@ -136,6 +180,8 @@ const LoginV2 = ({ mode }: { mode: Mode }) => {
               value={password}
               onChange={e => setPassword(e.target.value)}
               disabled={isSubmitting}
+              error={!!getFieldError('password')}
+              helperText={getFieldError('password')}
               slotProps={{
                 input: {
                   endAdornment: (
@@ -153,19 +199,24 @@ const LoginV2 = ({ mode }: { mode: Mode }) => {
                 }
               }}
             />
-            <div className='flex justify-between items-center flex-wrap gap-x-3 gap-y-1'>
-              <FormControlLabel control={<Checkbox />} label='Remember me' />
-              <Typography className='text-end' color='primary.main' component={Link} href='/forgot-password'>
-                Forgot password?
-              </Typography>
-            </div>
-            <Button fullWidth variant='contained' type='submit' disabled={isSubmitting}>
-              {isSubmitting ? <CircularProgress size={24} color='inherit' /> : 'Log In'}
+            <FormControlLabel
+              control={<Checkbox checked={agreeTerms} onChange={e => setAgreeTerms(e.target.checked)} />}
+              label={
+                <Typography>
+                  I agree to{' '}
+                  <Typography component={Link} color='primary.main'>
+                    privacy policy & terms
+                  </Typography>
+                </Typography>
+              }
+            />
+            <Button fullWidth variant='contained' type='submit' disabled={isSubmitting || !agreeTerms}>
+              {isSubmitting ? <CircularProgress size={24} color='inherit' /> : 'Sign Up'}
             </Button>
             <div className='flex justify-center items-center flex-wrap gap-2'>
-              <Typography>New on our platform?</Typography>
-              <Typography component={Link} href='/register' color='primary.main'>
-                Create an account
+              <Typography>Already have an account?</Typography>
+              <Typography component={Link} href='/login' color='primary.main'>
+                Sign in instead
               </Typography>
             </div>
             <Divider className='gap-3'>or</Divider>
@@ -184,4 +235,4 @@ const LoginV2 = ({ mode }: { mode: Mode }) => {
   )
 }
 
-export default LoginV2
+export default RegisterV2
