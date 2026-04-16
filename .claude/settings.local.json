@@ -2,7 +2,27 @@
   "permissions": {
     "allow": [
       "Bash(xargs ls *)",
-      "Bash(python -c ' *)"
+      "Bash(python -c ' *)",
+      "Bash(.venv/Scripts/python.exe -m pip install --quiet django-filter==24.3 djangorestframework-simplejwt==5.4.0 django-allauth==65.3.0 python-decouple==3.8 dj-database-url==2.3.0 django-axes==7.0.1 django-redis==5.4.0 celery==5.4.0 django-celery-beat==2.7.0 django-celery-results==2.5.1 redis==5.2.1 Pillow==11.0.0 drf-spectacular==0.28.0 python-dateutil==2.9.0)",
+      "Bash(.venv/Scripts/python.exe -m pip install --quiet django-extensions==3.2.3 django-model-utils==5.0.0 stripe==11.2.0)",
+      "Bash(.venv/Scripts/python.exe manage.py makemigrations users)",
+      "Bash(.venv/Scripts/python.exe -m pip install --quiet cryptography)",
+      "Bash(.venv/Scripts/python.exe -c \"import drf_spectacular; print\\(drf_spectacular.__version__\\)\")",
+      "Bash(.venv/Scripts/python.exe -c \"from drf_spectacular.views import *; import drf_spectacular.views as v; print\\(dir\\(v\\)\\)\")",
+      "Bash(.venv/Scripts/python.exe -c \"import ast; src=open\\('.venv/Lib/site-packages/drf_spectacular/views.py'\\).read\\(\\); tree=ast.parse\\(src\\); print\\([n.name for n in ast.walk\\(tree\\) if isinstance\\(n, ast.ClassDef\\)]\\)\")",
+      "Bash(.venv/Scripts/python.exe manage.py makemigrations organizations)",
+      "Bash(.venv/Scripts/python.exe manage.py makemigrations api)",
+      "Bash(.venv/Scripts/python.exe manage.py migrate)",
+      "Bash(.venv/Scripts/python.exe manage.py check)",
+      "Bash(.venv/Scripts/python.exe manage.py runserver 8000)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8000/api/v1/auth/csrf/)",
+      "Bash(taskkill /F /IM python.exe /T)",
+      "Bash(.venv/Scripts/python.exe -c ' *)",
+      "Bash(python manage.py check)",
+      "Bash(python manage.py runserver 8000)",
+      "Bash(curl -s -c /tmp/adoratour_cookies.txt http://127.0.0.1:8000/api/v1/auth/csrf/)",
+      "Bash(python -m json.tool)",
+      "Read(//tmp/**)"
     ]
   }
 }

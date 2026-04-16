@@ -86,7 +86,6 @@ class OrgMembershipSerializer(serializers.Serializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     org_memberships = OrgMembershipSerializer(
-        source='org_memberships',
         many=True,
         read_only=True,
     )

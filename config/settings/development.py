@@ -32,15 +32,16 @@ try:
 except ImportError:
     pass
 
-# Use memory cache for axes in development (no Redis required)
+# Use default locmem cache in dev (no Redis required)
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
     },
-    'axes': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'axes',
-    },
 }
 
-AXES_HANDLER = 'axes.handlers.cache.AxesCacheHandler'
+# Use DB-backed handler in dev — avoids needing the 'axes' named Redis cache
+AXES_HANDLER = 'axes.handlers.database.AxesDatabaseHandler'
+
+# Run Celery tasks synchronously in dev (no broker/Redis required)
+CELERY_TASK_ALWAYS_EAGER    = True
+CELERY_TASK_EAGER_PROPAGATES = False   # swallow task errors so they don't crash the view

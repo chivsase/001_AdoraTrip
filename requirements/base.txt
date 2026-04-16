@@ -47,3 +47,6 @@ drf-spectacular==0.28.0
 
 # Caching
 django-redis==5.4.0
+
+# Brute force protection
+django-axes==7.0.1
