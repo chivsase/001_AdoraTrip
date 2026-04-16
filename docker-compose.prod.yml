@@ -1,0 +1,144 @@
+version: "3.9"
+
+# =============================================================================
+# AdoraTrip — Production Docker Compose Override
+#
+# Usage (always layer on top of base compose):
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# This file only declares what changes from the dev compose.
+# Everything not listed here inherits from docker-compose.yml.
+# =============================================================================
+
+services:
+
+  # ---------------------------------------------------------------------------
+  # Django API — production build + gunicorn + entrypoint
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+      target: production
+    restart: always
+    volumes:
+      # No source code mount in prod — image is self-contained
+      - static_volume:/app/staticfiles
+      - media_volume:/app/mediafiles
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.production
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+
+  # ---------------------------------------------------------------------------
+  # Django Channels — production build
+  # ---------------------------------------------------------------------------
+  websocket:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+      target: production
+    restart: always
+    volumes: []              # No source mount in prod
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.production
+
+  # ---------------------------------------------------------------------------
+  # Celery Worker — production build, higher concurrency
+  # ---------------------------------------------------------------------------
+  celery_worker:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+      target: production
+    restart: always
+    volumes: []              # No source mount in prod
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.production
+    command: celery -A config.celery worker --loglevel=warning --concurrency=8 -Q default,emails,payments,reports
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+
+  # ---------------------------------------------------------------------------
+  # Celery Beat — production build
+  # ---------------------------------------------------------------------------
+  celery_beat:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+      target: production
+    restart: always
+    volumes: []              # No source mount in prod
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.production
+
+  # ---------------------------------------------------------------------------
+  # Next.js Frontend — production standalone build
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+      target: runner          # Minimal standalone production image
+    restart: always
+    volumes: []              # No source mount in prod; image is self-contained
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: 1
+
+  # ---------------------------------------------------------------------------
+  # PostgreSQL — production constraints
+  # ---------------------------------------------------------------------------
+  db:
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}   # Must be set explicitly; no fallback
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 4G
+
+  # ---------------------------------------------------------------------------
+  # Redis — production constraints + password
+  # ---------------------------------------------------------------------------
+  redis:
+    restart: always
+    command: >
+      redis-server
+      --appendonly yes
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
+      --requirepass ${REDIS_PASSWORD}
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  # ---------------------------------------------------------------------------
+  # Nginx — production config with HTTPS + Let's Encrypt
+  # ---------------------------------------------------------------------------
+  nginx:
+    restart: always
+    volumes:
+      - ./docker/nginx/nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro    # Certbot cert directory
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/mediafiles:ro
+
+  # ---------------------------------------------------------------------------
+  # Dev tools — completely disabled in production
+  # ---------------------------------------------------------------------------
+  flower:
+    profiles:
+      - disabled
+
+  pgadmin:
+    profiles:
+      - disabled

@@ -1,0 +1,86 @@
+# =============================================================================
+# AdoraTrip Backend — .dockerignore
+# Keeps the build context lean: excludes everything the image doesn't need.
+# A smaller context = faster builds and no secret leaks into layers.
+# =============================================================================
+
+# --- Python runtime artifacts ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- Django generated directories ---
+# Staticfiles are collected inside the container, not copied in
+staticfiles/
+mediafiles/
+db.sqlite3
+
+# --- Logs ---
+*.log
+logs/
+
+# --- Test + coverage artifacts ---
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.tox/
+nosetests.xml
+coverage.xml
+
+# --- Git ---
+.git/
+.gitignore
+.gitattributes
+
+# --- Secrets — NEVER bake .env into an image ---
+.env
+.env.*
+!.env.example
+
+# --- Docker files (not needed inside the image) ---
+docker-compose*.yml
+Dockerfile*
+
+# --- IDE / editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+.editorconfig
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Windows scripts ---
+*.bat
+*.ps1
+
+# --- Documentation ---
+*.md
+docs/
+
+# --- CI/CD ---
+.github/
+.gitlab-ci.yml
+.circleci/
+
+# --- Misc ---
+*.bak
+*.tmp
+*.orig
