@@ -114,8 +114,11 @@ const typeLabel: Record<Deal['type'], { label: string; color: string }> = {
 }
 
 function useCountdown(target: Date) {
-  const [diff, setDiff] = useState(() => Math.max(0, target.getTime() - Date.now()))
+  const [mounted, setMounted] = useState(false)
+  const [diff, setDiff] = useState(0)
   useEffect(() => {
+    setMounted(true)
+    setDiff(Math.max(0, target.getTime() - Date.now()))
     const id = setInterval(() => setDiff(Math.max(0, target.getTime() - Date.now())), 1000)
     return () => clearInterval(id)
   }, [target])
@@ -123,11 +126,12 @@ function useCountdown(target: Date) {
   const h = Math.floor((diff % 86400_000) / 3600_000)
   const m = Math.floor((diff % 3600_000) / 60_000)
   const s = Math.floor((diff % 60_000) / 1000)
-  return { days, h, m, s, expired: diff === 0 }
+  return { days, h, m, s, expired: mounted && diff === 0, mounted }
 }
 
 function Countdown({ target }: { target: Date }) {
-  const { days, h, m, s, expired } = useCountdown(target)
+  const { days, h, m, s, expired, mounted } = useCountdown(target)
+  if (!mounted) return <span className='flex items-center gap-1 text-[10px] font-bold text-white tabular-nums'><Clock className='w-3 h-3' />--:--:--</span>
   if (expired) return <span className='text-[10px] text-[#EF4444] font-bold'>Expired</span>
   const display = days > 0
     ? `${days}d ${String(h).padStart(2, '0')}h left`

@@ -2,7 +2,7 @@ import fs from 'fs'
 import path from 'path'
 
 /**
- * Server-side file logger for Next.js — similar to Laravel's storage/logs/
+ * Server-side file logger for Next.js
  *
  * Writes to Frontend/logs/app.log and Frontend/logs/error.log
  * with daily date prefixes and structured format.

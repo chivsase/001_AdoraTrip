@@ -50,9 +50,9 @@ export type Config = {
 }
 
 const themeConfig: Config = {
-  templateName: 'Materio',
+  templateName: 'AdoraTrip',
   homePageUrl: '/home',
-  settingsCookieName: 'materio-mui-next-demo',
+  settingsCookieName: 'adoratrip-settings',
   mode: 'system', // 'system', 'light', 'dark'
   skin: 'default', // 'default', 'bordered'
   semiDark: false, // true, false

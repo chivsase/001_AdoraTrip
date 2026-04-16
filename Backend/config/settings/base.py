@@ -313,7 +313,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 # ----------------------------------------------------------
-# Logging — structured file output (like Laravel's storage/logs/)
+# Logging — structured file output
 # Logs are written to Backend/logs/ (volume-mounted in Docker).
 # ----------------------------------------------------------
 LOG_DIR = BASE_DIR / 'logs'
@@ -353,7 +353,7 @@ LOGGING = {
             'formatter': 'simple',
         },
 
-        # All logs — daily rotating file (like Laravel's laravel-YYYY-MM-DD.log)
+        # All logs — daily rotating file
         'file': {
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'filename': LOG_DIR / 'adoratrip.log',
