@@ -1,22 +1,28 @@
 'use client'
 
+// React Imports
 import type { ComponentProps } from 'react'
 
-import Box from '@mui/material/Box'
+// MUI imports
 import type { BoxProps } from '@mui/material/Box'
+import Box from '@mui/material/Box'
 import { styled } from '@mui/material/styles'
 
+// Third-party Imports
 import ReactDatePickerComponent from 'react-datepicker'
+
+// Styles
 import 'react-datepicker/dist/react-datepicker.css'
 
 type Props = ComponentProps<typeof ReactDatePickerComponent> & {
   boxProps?: BoxProps
 }
 
+// Styled Components
 const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
   return {
     '& .react-datepicker-popper': {
-      zIndex: 1600,
+      zIndex: 20,
       paddingTop: `${theme.spacing(0.5)} !important`
     },
     '& .react-datepicker-wrapper': {
@@ -60,21 +66,21 @@ const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
           left: 15,
           ...(theme.direction === 'ltr'
             ? {
-              backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(46 38 61 / 0.7)' d='M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z' /%3E%3C/svg%3E\")",
-              ...theme.applyStyles('dark', {
                 backgroundImage:
-                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(231 227 252 / 0.7)' d='M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z' /%3E%3C/svg%3E\")"
-              })
-            }
+                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(46 38 61 / 0.7)' d='M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z' /%3E%3C/svg%3E\")",
+                ...theme.applyStyles('dark', {
+                  backgroundImage:
+                    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(231 227 252 / 0.7)' d='M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z' /%3E%3C/svg%3E\")"
+                })
+              }
             : {
-              backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(46 38 61 / 0.7)' d='M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z' /%3E%3C/svg%3E\")",
-              ...theme.applyStyles('dark', {
                 backgroundImage:
-                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(231 227 252 / 0.7)' d='M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z' /%3E%3C/svg%3E\")"
-              })
-            }),
+                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(46 38 61 / 0.7)' d='M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z' /%3E%3C/svg%3E\")",
+                ...theme.applyStyles('dark', {
+                  backgroundImage:
+                    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(231 227 252 / 0.7)' d='M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z' /%3E%3C/svg%3E\")"
+                })
+              }),
           '& .react-datepicker__navigation-icon': {
             display: 'none'
           }
@@ -88,21 +94,21 @@ const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
           right: 15,
           ...(theme.direction === 'ltr'
             ? {
-              backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(46 38 61 / 0.7)' d='M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z' /%3E%3C/svg%3E\")",
-              ...theme.applyStyles('dark', {
                 backgroundImage:
-                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(231 227 252 / 0.7)' d='M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z' /%3E%3C/svg%3E\")"
-              })
-            }
+                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(46 38 61 / 0.7)' d='M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z' /%3E%3C/svg%3E\")",
+                ...theme.applyStyles('dark', {
+                  backgroundImage:
+                    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(231 227 252 / 0.7)' d='M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z' /%3E%3C/svg%3E\")"
+                })
+              }
             : {
-              backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(46 38 61 / 0.7)' d='M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z' /%3E%3C/svg%3E\")",
-              ...theme.applyStyles('dark', {
                 backgroundImage:
-                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(231 227 252 / 0.7)' d='M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z' /%3E%3C/svg%3E\")"
-              })
-            }),
+                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(46 38 61 / 0.7)' d='M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z' /%3E%3C/svg%3E\")",
+                ...theme.applyStyles('dark', {
+                  backgroundImage:
+                    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' style='width:24px;height:24px' viewBox='0 0 24 24'%3E%3Cpath fill='rgb(231 227 252 / 0.7)' d='M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z' /%3E%3C/svg%3E\")"
+                })
+              }),
           '& .react-datepicker__navigation-icon': {
             display: 'none'
           }
@@ -138,17 +144,17 @@ const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
           borderRadius: '50% !important'
         },
         '&.react-datepicker__day--selected.react-datepicker__day--in-selecting-range.react-datepicker__day--selecting-range-start, &.react-datepicker__day--selected.react-datepicker__day--range-start.react-datepicker__day--in-range, &.react-datepicker__day--range-start':
-        {
-          borderRadius: '18px 0px 0px 18px',
-          color: 'var(--mui-palette-common-white) !important',
-          backgroundColor: 'var(--mui-palette-primary-main) !important',
-          '&:hover': {
-            borderTopLeftRadius: '50% !important',
-            borderBottomLeftRadius: '50% !important',
-            borderTopRightRadius: '0 !important',
-            borderBottomRightRadius: '0 !important'
-          }
-        },
+          {
+            borderRadius: '18px 0px 0px 18px;',
+            color: 'var(--mui-palette-common-white) !important',
+            backgroundColor: 'var(--mui-palette-primary-main) !important',
+            '&:hover': {
+              borderTopLeftRadius: '50% !important',
+              borderBottomLeftRadius: '50% !important',
+              borderTopRightRadius: '0 !important',
+              borderBottomRightRadius: '0 !important'
+            }
+          },
         '&.react-datepicker__day--range-end.react-datepicker__day--in-range': {
           borderRadius: '0px 18px 18px 0px',
           color: 'var(--mui-palette-common-white) !important',
@@ -164,12 +170,12 @@ const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
           outline: 0
         },
         '&.react-datepicker__day--outside-month, &.react-datepicker__day--disabled:not(.react-datepicker__day--selected)':
-        {
-          color: 'var(--mui-palette-text-disabled)',
-          '&:hover': {
-            backgroundColor: 'transparent'
-          }
-        },
+          {
+            color: 'var(--mui-palette-text-disabled)',
+            '&:hover': {
+              backgroundColor: 'transparent'
+            }
+          },
         '&.react-datepicker__day--highlighted, &.react-datepicker__day--highlighted:hover': {
           color: 'var(--mui-palette-success-main)',
           backgroundColor: 'var(--mui-palette-success-lightOpacity)',
@@ -258,14 +264,14 @@ const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
         backgroundColor: 'rgb(var(--mui-palette-primary-mainChannel) / 0.16)'
       },
       '& .react-datepicker__day--selected, & .react-datepicker__month-text--selected, & .react-datepicker__year-text--selected, & .react-datepicker__quarter-text--selected':
-      {
-        color: 'var(--mui-palette-common-white) !important',
-        backgroundColor: 'var(--mui-palette-primary-main) !important',
-        boxShadow: 'var(--mui-customShadows-xs)',
-        '&:hover': {
-          backgroundColor: 'var(--mui-palette-primary-dark) !important'
-        }
-      },
+        {
+          color: 'var(--mui-palette-common-white) !important',
+          backgroundColor: 'var(--mui-palette-primary-main) !important',
+          boxShadow: 'var(--mui-customShadows-xs)',
+          '&:hover': {
+            backgroundColor: 'var(--mui-palette-primary-dark) !important'
+          }
+        },
       '& .react-datepicker__header__dropdown': {
         '& .react-datepicker__month-dropdown-container:not(:last-child)': {
           marginRight: theme.spacing(8)
@@ -279,9 +285,9 @@ const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
           color: 'var(--mui-palette-text-primary)'
         },
         '& .react-datepicker__month-read-view:hover .react-datepicker__month-read-view--down-arrow, & .react-datepicker__year-read-view:hover .react-datepicker__year-read-view--down-arrow':
-        {
-          borderColor: 'var(--mui-palette-text-primary)'
-        },
+          {
+            borderColor: 'var(--mui-palette-text-primary)'
+          },
         '& .react-datepicker__month-read-view--down-arrow, & .react-datepicker__year-read-view--down-arrow': {
           top: 4,
           borderColor: 'var(--mui-palette-text-secondary)'
@@ -295,7 +301,7 @@ const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
           boxShadow: 'var(--mui-customShadows-lg)',
           '[data-skin="bordered"] &': {
             boxShadow: 'none',
-            border: '1px solid var(--mui-palette-divider)'
+            border: `1px solid var(--mui-palette-divider)`
           }
         },
         '& .react-datepicker__month-option, & .react-datepicker__year-option': {
@@ -329,6 +335,7 @@ const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
           }
         },
         '& .react-datepicker__year-option': {
+          // TODO: Remove some of the following styles for arrow in Year dropdown when react-datepicker give arrows in Year dropdown
           '& .react-datepicker__navigation--years-upcoming': {
             width: 9,
             height: 9,
@@ -395,6 +402,8 @@ const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
         color: 'var(--mui-palette-common-white)',
         backgroundColor: 'var(--mui-palette-primary-main)'
       },
+
+      // Time Picker
       '&:not(.react-datepicker--time-only)': {
         '& .react-datepicker__time-container': {
           borderLeftColor: 'var(--mui-palette-divider)',
@@ -420,6 +429,7 @@ const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
           marginTop: theme.spacing(3),
           color: 'var(--mui-palette-text-primary)'
         },
+
         '& .react-datepicker__time': {
           background: 'var(--mui-palette-background-paper)',
           '& .react-datepicker__time-box .react-datepicker__time-list-item--disabled': {
@@ -431,6 +441,7 @@ const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
             }
           }
         },
+
         '& .react-datepicker__time-list-item': {
           height: 'auto !important',
           padding: `${theme.spacing(1.75, 0)} !important`,
@@ -452,6 +463,7 @@ const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
             boxShadow: 'var(--mui-customShadows-xs)'
           }
         },
+
         '& .react-datepicker__time-box': {
           width: '100%'
         },
@@ -459,25 +471,31 @@ const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
           '&::-webkit-scrollbar': {
             width: 8
           },
+
+          /* Track */
           '&::-webkit-scrollbar-track': {
             background: 'var(--mui-palette-background-paper)'
           },
+
+          /* Handle */
           '&::-webkit-scrollbar-thumb': {
             borderRadius: 10,
             background: '#aaa'
           },
+
+          /* Handle on hover */
           '&::-webkit-scrollbar-thumb:hover': {
             background: '#999'
           }
         }
       },
       '& .react-datepicker__day:hover, & .react-datepicker__month-text:hover, & .react-datepicker__quarter-text:hover, & .react-datepicker__year-text:hover':
-      {
-        backgroundColor: 'var(--mui-palette-action-hover)'
-      },
+        {
+          backgroundColor: 'var(--mui-palette-action-hover)'
+        },
       '[data-skin="bordered"] &': {
         boxShadow: 'none',
-        border: '1px solid var(--mui-palette-divider)'
+        border: `1px solid var(--mui-palette-divider)`
       }
     },
     '& .react-datepicker__close-icon': {
@@ -495,6 +513,7 @@ const StyledReactDatePicker = styled(Box)<BoxProps>(({ theme }) => {
 }) as typeof Box
 
 const AppReactDatepicker = (props: Props) => {
+  // Props
   const { boxProps, ...rest } = props
 
   return (

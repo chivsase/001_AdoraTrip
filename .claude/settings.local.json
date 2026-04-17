@@ -30,7 +30,8 @@
       "WebSearch",
       "Bash(grep -l \"'use client'\" c:/wamp64/www/AdoraTrip/Frontend/src/components/landing/*.tsx)",
       "Bash(grep -rL \"'use client'\" c:/wamp64/www/AdoraTrip/Frontend/src/components/landing/*.tsx)",
-      "Bash(wc -l \"c:\\\\wamp64\\\\www\\\\AdoraTrip\\\\Frontend\\\\src\\\\components\\\\landing\"/*.tsx)"
+      "Bash(wc -l \"c:\\\\wamp64\\\\www\\\\AdoraTrip\\\\Frontend\\\\src\\\\components\\\\landing\"/*.tsx)",
+      "WebFetch(domain:demos.themeselection.com)"
     ]
   }
 }

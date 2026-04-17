@@ -13,8 +13,14 @@ export const metadata = {
  * so it can own the sidebar open/collapse state; this layout stays
  * a Server Component so metadata export works correctly.
  */
+import Providers from '@components/Providers'
+
 const PublicLayout = ({ children }: { children: ReactNode }) => {
-  return <PublicShell>{children}</PublicShell>
+  return (
+    <Providers direction="ltr">
+      <PublicShell>{children}</PublicShell>
+    </Providers>
+  )
 }
 
 export default PublicLayout

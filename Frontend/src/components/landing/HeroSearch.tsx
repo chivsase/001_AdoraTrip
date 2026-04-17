@@ -78,9 +78,9 @@ export default function HeroSearch() {
   const [activeTab, setActiveTab] = useState('hotels')
 
   return (
-    <section className='relative overflow-hidden'>
+    <section className='relative'>
       {/* ── Background ── */}
-      <div className='absolute inset-0'>
+      <div className='absolute inset-0 overflow-hidden'>
         {/* Deep rich gradient */}
         <div className='absolute inset-0 bg-gradient-to-br from-[#071C47] via-[#0D3172] to-[#1760F5]' />
         {/* Warm golden accent top-right */}
@@ -290,9 +290,7 @@ function DateRangeField({
       startDate={startDate as Date}
       endDate={endDate as Date}
       dateFormat='MM/dd/yyyy'
-      portalId='datepicker-root'
       id='date-range-picker'
-      popperProps={{ strategy: 'fixed' }}
       onChange={dates => onChange(dates as [Date | null, Date | null])}
       customInput={<CustomInput label={label} start={startDate as Date | number} end={endDate as Date | number} />}
     />
@@ -313,8 +311,6 @@ function SingleDateField({
       minDate={createOffsetDate(0)}
       selected={selectedDate}
       dateFormat='MM/dd/yyyy'
-      portalId='datepicker-root'
-      popperProps={{ strategy: 'fixed' }}
       onChange={date => onChange(date as Date | null)}
       customInput={<SingleCustomInput label={label} date={selectedDate} />}
     />
