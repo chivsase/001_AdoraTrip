@@ -101,60 +101,58 @@ export default function HeroSearch() {
       {/* ── Content ── */}
       <div className='relative z-10 max-w-[1160px] mx-auto px-4 pt-12 pb-18 sm:pt-16 sm:pb-22 md:pb-24'>
 
-        {/* Headline block */}
-        <div className='text-center mb-10 md:mb-12'>
+        {/* Headline block - with entry animation */}
+        <div className='text-center mb-10 md:mb-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-150 fill-mode-both'>
 
           {/* Eyebrow badge */}
-          <div className='inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 text-white/90 text-xs font-semibold px-4 py-1.5 rounded-full mb-5 tracking-wide'>
-            <span className='text-sm leading-none'>🇰🇭</span>
+          <div className='inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-[11px] font-bold px-4 py-2 rounded-full mb-6 tracking-widest uppercase'>
+            <span className='text-base leading-none filter drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]'>🇰🇭</span>
             Discover the Kingdom of Wonder
           </div>
 
-          <h1 className='text-[2.4rem] sm:text-5xl md:text-[3.6rem] font-extrabold text-white leading-[1.1] tracking-tight'>
+          <h1 className='text-[2.6rem] sm:text-5xl md:text-[3.8rem] font-black text-white leading-[1.05] tracking-tight'>
             Your Perfect Stay in
             <br />
-            <span className='text-transparent bg-clip-text bg-gradient-to-r from-[#FFD166] to-[#FFA500]'>
+            <span className='text-transparent bg-clip-text bg-gradient-to-r from-[#FFD166] via-[#FFB700] to-[#FFA500] drop-shadow-[0_2px_10px_rgba(255,165,0,0.2)]'>
               Cambodia
             </span>{' '}
             Awaits
           </h1>
 
-          <p className='mt-4 text-base sm:text-lg text-white/65 max-w-lg mx-auto leading-relaxed font-light'>
-            Ancient temples, pristine beaches, vibrant cities — find your ideal escape across every province.
+          <p className='mt-5 text-base sm:text-lg text-white/70 max-w-xl mx-auto leading-relaxed font-medium'>
+            Journey through ancient temples, pristine islands, and vibrant cities. 
+            Experience world-class hospitality in every province.
           </p>
 
           {/* Quick destination pills */}
-          <div className='flex items-center justify-center flex-wrap gap-2 mt-6'>
-            {['Siem Reap', 'Phnom Penh', 'Sihanoukville', 'Kampot', 'Mondulkiri'].map(place => (
+          <div className='flex items-center justify-center flex-wrap gap-2.5 mt-8'>
+            {['Siem Reap', 'Phnom Penh', 'Sihanoukville', 'Kampot', 'Mondulkiri'].map((place, idx) => (
               <button
                 key={place}
-                className='flex items-center gap-1.5 bg-white/10 hover:bg-white/20 border border-white/15 text-white/85 hover:text-white text-xs font-medium px-3.5 py-1.5 rounded-full transition-all duration-200'
+                className={`flex items-center gap-1.5 bg-white/10 hover:bg-white/25 border border-white/10 text-white/80 hover:text-white text-xs font-semibold px-4 py-2 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both`}
+                style={{ animationDelay: `${400 + (idx * 100)}ms` }}
               >
                 <MapPin className='w-3 h-3' />
                 {place}
               </button>
             ))}
-            <button className='flex items-center gap-1.5 bg-white/10 hover:bg-white/20 border border-white/15 text-white/85 hover:text-white text-xs font-medium px-3.5 py-1.5 rounded-full transition-all duration-200'>
-              <ArrowRight className='w-3 h-3' />
-              More
-            </button>
           </div>
         </div>
 
         {/* ── Search card ── */}
-        <div className='max-w-[900px] mx-auto'>
+        <div className='max-w-[940px] mx-auto animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500 fill-mode-both'>
           {/* Tabs */}
-          <div className='flex bg-white/10 backdrop-blur-sm rounded-t-2xl p-1 gap-1'>
+          <div className='flex bg-white/10 backdrop-blur-xl border border-white/10 rounded-t-[24px] p-1.5 gap-1.5 mx-2 sm:mx-6 shadow-2xl'>
             {searchTabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center justify-center gap-2 flex-1 py-2.5 px-3 sm:px-5 rounded-xl text-xs sm:text-[13px] font-semibold transition-all duration-200 ${activeTab === tab.id
-                  ? 'bg-white text-[#287DFA] shadow-[0_2px_12px_rgba(0,0,0,0.10)]'
-                  : 'text-white/70 hover:bg-white/10 hover:text-white'
+                className={`flex items-center justify-center gap-2.5 flex-1 py-3 px-4 sm:px-6 rounded-[18px] text-xs sm:text-[13px] font-bold transition-all duration-500 ${activeTab === tab.id
+                  ? 'bg-white text-[#287DFA] shadow-[0_8px_30px_rgba(0,0,0,0.15)] scale-[1.02]'
+                  : 'text-white/75 hover:bg-white/10 hover:text-white hover:scale-[1.01]'
                   }`}
               >
-                <tab.icon className='w-4 h-4 shrink-0' />
+                <tab.icon className={`w-4 h-4 shrink-0 transition-transform duration-500 ${activeTab === tab.id ? 'scale-110' : ''}`} />
                 <span className='hidden sm:inline'>{tab.label}</span>
                 <span className='sm:hidden'>{tab.label.split(' ')[0]}</span>
               </button>
@@ -162,7 +160,8 @@ export default function HeroSearch() {
           </div>
 
           {/* Form card */}
-          <div className='bg-white rounded-b-2xl rounded-tr-2xl shadow-[0_16px_48px_rgba(0,0,0,0.22)] p-4 sm:p-6'>
+          <div className='bg-white rounded-[24px] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.3)] p-5 sm:p-8 relative z-20'>
+            <div className='absolute -top-6 left-12 w-12 h-12 bg-white rotate-45 hidden sm:block -z-10' />
             {activeTab === 'hotels' && <HotelSearchForm />}
             {activeTab === 'tours' && <ToursSearchForm />}
             {activeTab === 'transfers' && <TransfersForm />}
@@ -201,11 +200,11 @@ function HotelSearchForm() {
   }
 
   return (
-    <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
-      <div className='sm:col-span-2'>
+    <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4'>
+      <div className='lg:col-span-5'>
         <CambodiaLocationField label='Province / City' placeholder='Where in Cambodia?' />
       </div>
-      <div className='sm:col-span-2'>
+      <div className='lg:col-span-4'>
         <DateRangeField
           label='Stay Dates'
           startDate={startDate}
@@ -213,8 +212,12 @@ function HotelSearchForm() {
           onChange={handleDateChange}
         />
       </div>
-      <GuestPicker label='Guests & Rooms' />
-      <SearchButton />
+      <div className='lg:col-span-3'>
+        <GuestPicker label='Guests & Rooms' />
+      </div>
+      <div className='sm:col-span-2 lg:col-span-12 mt-2'>
+        <SearchButton fullWidth />
+      </div>
     </div>
   )
 }
@@ -475,10 +478,11 @@ function GuestPicker({ label = 'Guests & Rooms' }: { label?: string }) {
 function SearchButton({ fullWidth = false }: { fullWidth?: boolean }) {
   return (
     <button
-      className={`flex items-center justify-center gap-2 bg-[#287DFA] hover:bg-[#1a6ae0] active:bg-[#155cc7] text-white font-bold text-sm py-3.5 rounded-xl transition-all duration-200 shadow-[0_4px_16px_rgba(40,125,250,0.38)] hover:shadow-[0_6px_22px_rgba(40,125,250,0.48)] ${fullWidth ? 'w-full px-6' : 'w-full px-6 sm:col-span-1'}`}
+      className={`relative group flex items-center justify-center gap-3 bg-[#287DFA] hover:bg-[#1a6ae0] active:scale-95 text-white font-bold text-base py-4 px-10 rounded-2xl transition-all duration-500 shadow-[0_12px_24px_-8px_rgba(40,125,250,0.5)] hover:shadow-[0_20px_40px_-10px_rgba(40,125,250,0.6)] overflow-hidden ${fullWidth ? 'w-full' : 'w-full sm:col-span-1'}`}
     >
-      <Search className='w-4 h-4' />
-      Search
+      <div className='absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out' />
+      <Search className='w-5 h-5 transition-transform duration-500 group-hover:rotate-12' />
+      <span>Search Destinations</span>
     </button>
   )
 }

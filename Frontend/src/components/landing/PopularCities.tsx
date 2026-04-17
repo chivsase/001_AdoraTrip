@@ -16,44 +16,45 @@ const cities = [
 
 export default function PopularCities() {
   return (
-    <section className='py-12 md:py-16 bg-white border-t border-[#F3F4F6]'>
-      <div className='max-w-[1200px] mx-auto px-4 sm:px-6'>
+    <section className='py-14 md:py-20 bg-white border-t border-[#F1F5F9]'>
+      <div className='max-w-[1240px] mx-auto px-4 sm:px-6'>
 
         {/* Header */}
-        <div className='flex items-center justify-between mb-6'>
-          <div className='flex items-center gap-3'>
-            <div className='w-9 h-9 rounded-xl bg-[#EBF3FF] flex items-center justify-center shrink-0'>
-              <TrendingUp className='w-[17px] h-[17px] text-[#287DFA]' />
+        <div className='flex items-center justify-between mb-8 animate-in fade-in slide-in-from-left-4 duration-1000 fill-mode-both'>
+          <div className='flex items-center gap-4'>
+            <div className='w-11 h-11 rounded-2xl bg-[#F0F7FF] flex items-center justify-center shrink-0 shadow-sm border border-[#E0EDFF]'>
+              <TrendingUp className='w-5 h-5 text-[#287DFA]' />
             </div>
             <div>
-              <h2 className='text-xl sm:text-2xl font-bold text-[#111827] leading-tight'>Trending in Cambodia</h2>
-              <p className='text-xs text-[#9CA3AF] mt-0.5'>Most searched destinations this week</p>
+              <h2 className='text-xl sm:text-2xl font-black text-[#0F172A] leading-tight tracking-tight'>Trending in Cambodia</h2>
+              <p className='text-xs sm:text-[13px] text-[#64748B] mt-0.5 font-medium'>Most visited and sought-after destinations this season</p>
             </div>
           </div>
           <Link
             href='/destinations'
-            className='hidden sm:block text-xs font-semibold text-[#287DFA] hover:text-[#1a6ae0] transition-colors duration-200'
+            className='hidden sm:block text-xs font-black text-[#287DFA] hover:text-[#1a6ae0] tracking-wider uppercase'
           >
-            View all →
+            Explore Map View →
           </Link>
         </div>
 
         {/* Scrollable city chips */}
-        <div className='flex gap-3 overflow-x-auto pb-1' style={{ scrollbarWidth: 'none' }}>
-          {cities.map(city => (
+        <div className='flex gap-4 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0' style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          {cities.map((city, idx) => (
             <Link
               key={city.name}
               href={`/search?city=${encodeURIComponent(city.name)}`}
-              className='flex items-center gap-3 shrink-0 px-4 py-3 bg-[#F9FAFB] hover:bg-[#EBF3FF] border border-[#E5E7EB] hover:border-[#287DFA]/25 rounded-2xl transition-all duration-200 group'
+              className='flex items-center gap-4 shrink-0 px-5 py-4 bg-[#F8FAFC] hover:bg-white border border-[#E2E8F0] hover:border-[#287DFA]/40 hover:shadow-[0_12px_30px_-8px_rgba(40,125,250,0.15)] rounded-[20px] transition-all duration-500 group animate-in fade-in slide-in-from-right-4 fill-mode-both'
+              style={{ animationDelay: `${idx * 75}ms` }}
             >
-              <span className='text-2xl leading-none'>{city.emoji}</span>
+              <div className='text-3xl filter grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-110'>{city.emoji}</div>
               <div className='min-w-0'>
-                <p className='text-[13px] font-bold text-[#111827] group-hover:text-[#287DFA] transition-colors duration-200 whitespace-nowrap'>
+                <p className='text-[14px] font-black text-[#0F172A] group-hover:text-[#287DFA] transition-colors duration-300 whitespace-nowrap'>
                   {city.name}
                 </p>
-                <div className='flex items-center gap-1 mt-0.5'>
-                  <Hotel className='w-3 h-3 text-[#9CA3AF]' />
-                  <p className='text-[11px] text-[#9CA3AF] whitespace-nowrap'>{city.properties} stays</p>
+                <div className='flex items-center gap-1.5 mt-0.5'>
+                  <Hotel className='w-3 h-3 text-[#94A3B8]' />
+                  <p className='text-[11px] text-[#94A3B8] font-bold whitespace-nowrap uppercase tracking-tighter'>{city.properties} Premium stays</p>
                 </div>
               </div>
             </Link>
