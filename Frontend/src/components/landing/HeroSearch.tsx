@@ -1,13 +1,11 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import type { ComponentType } from 'react'
+import { useState, useRef, useEffect, forwardRef } from 'react'
 import {
   Hotel,
   Compass,
   Car,
   MapPin,
-  CalendarDays,
   Users,
   Search,
   ChevronDown,
@@ -15,6 +13,12 @@ import {
   Minus,
   ArrowRight
 } from 'lucide-react'
+
+import TextField from '@mui/material/TextField'
+import type { TextFieldProps } from '@mui/material/TextField'
+import { formatDate } from 'date-fns/format'
+
+import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 
 /* ── Cambodia provinces / cities ────────────────────────── */
 export const cambodiaLocations = [
@@ -35,6 +39,40 @@ const searchTabs = [
   { id: 'tours', label: 'Tours & Activities', icon: Compass },
   { id: 'transfers', label: 'Transfers', icon: Car }
 ]
+
+const createOffsetDate = (offset: number) => {
+  const date = new Date()
+
+  date.setHours(0, 0, 0, 0)
+  date.setDate(date.getDate() + offset)
+
+  return date
+}
+
+type CustomInputProps = TextFieldProps & {
+  label?: string
+  end: Date | number | null
+  start: Date | number | null
+}
+
+const CustomInput = forwardRef((props: CustomInputProps, ref) => {
+  const startDate = props.start ? formatDate(props.start, 'MM/dd/yyyy') : ''
+  const endDate = props.end ? ` - ${formatDate(props.end, 'MM/dd/yyyy')}` : null
+  const value = `${startDate}${endDate !== null ? endDate : ''}`
+
+  return <TextField fullWidth inputRef={ref} label={props.label || ''} {...props} value={value} />
+})
+
+type SingleCustomInputProps = TextFieldProps & {
+  label?: string
+  date: Date | null
+}
+
+const SingleCustomInput = forwardRef((props: SingleCustomInputProps, ref) => {
+  const value = props.date ? formatDate(props.date, 'MM/dd/yyyy') : ''
+
+  return <TextField fullWidth inputRef={ref} label={props.label || ''} {...props} value={value} />
+})
 
 export default function HeroSearch() {
   const [activeTab, setActiveTab] = useState('hotels')
@@ -111,11 +149,10 @@ export default function HeroSearch() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center justify-center gap-2 flex-1 py-2.5 px-3 sm:px-5 rounded-xl text-xs sm:text-[13px] font-semibold transition-all duration-200 ${
-                  activeTab === tab.id
-                    ? 'bg-white text-[#287DFA] shadow-[0_2px_12px_rgba(0,0,0,0.10)]'
-                    : 'text-white/70 hover:bg-white/10 hover:text-white'
-                }`}
+                className={`flex items-center justify-center gap-2 flex-1 py-2.5 px-3 sm:px-5 rounded-xl text-xs sm:text-[13px] font-semibold transition-all duration-200 ${activeTab === tab.id
+                  ? 'bg-white text-[#287DFA] shadow-[0_2px_12px_rgba(0,0,0,0.10)]'
+                  : 'text-white/70 hover:bg-white/10 hover:text-white'
+                  }`}
               >
                 <tab.icon className='w-4 h-4 shrink-0' />
                 <span className='hidden sm:inline'>{tab.label}</span>
@@ -153,13 +190,29 @@ export default function HeroSearch() {
 
 /* ── Hotel Search ──────────────────────────────────────── */
 function HotelSearchForm() {
+  const [startDate, setStartDate] = useState<Date | null>(() => createOffsetDate(1))
+  const [endDate, setEndDate] = useState<Date | null>(() => createOffsetDate(4))
+
+  const handleDateChange = (dates: [Date | null, Date | null]) => {
+    const [start, end] = dates
+
+    setStartDate(start)
+    setEndDate(end)
+  }
+
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
       <div className='sm:col-span-2'>
         <CambodiaLocationField label='Province / City' placeholder='Where in Cambodia?' />
       </div>
-      <SearchField icon={CalendarDays} label='Check-in' placeholder='Select date' defaultValue='Apr 25, 2026' />
-      <SearchField icon={CalendarDays} label='Check-out' placeholder='Select date' defaultValue='Apr 28, 2026' />
+      <div className='sm:col-span-2'>
+        <DateRangeField
+          label='Stay Dates'
+          startDate={startDate}
+          endDate={endDate}
+          onChange={handleDateChange}
+        />
+      </div>
       <GuestPicker label='Guests & Rooms' />
       <SearchButton />
     </div>
@@ -168,12 +221,14 @@ function HotelSearchForm() {
 
 /* ── Tours Search ──────────────────────────────────────── */
 function ToursSearchForm() {
+  const [tourDate, setTourDate] = useState<Date | null>(() => createOffsetDate(1))
+
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
       <div className='sm:col-span-2'>
         <CambodiaLocationField label='Province / City' placeholder='Choose a destination' />
       </div>
-      <SearchField icon={CalendarDays} label='Date' placeholder='Select date' defaultValue='Apr 25, 2026' />
+      <SingleDateField label='Date' selectedDate={tourDate} onChange={setTourDate} />
       <GuestPicker label='Participants' />
       <div className='sm:col-span-2'>
         <div className='flex flex-wrap gap-2 mb-3'>
@@ -194,16 +249,75 @@ function ToursSearchForm() {
 
 /* ── Transfers ─────────────────────────────────────────── */
 function TransfersForm() {
+  const [transferDate, setTransferDate] = useState<Date | null>(() => createOffsetDate(1))
+
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
       <CambodiaLocationField label='From' placeholder='Pickup location' />
       <CambodiaLocationField label='To' placeholder='Drop-off location' />
-      <SearchField icon={CalendarDays} label='Date' placeholder='Select date' defaultValue='Apr 25, 2026' />
+      <SingleDateField
+        label='Date'
+        selectedDate={transferDate}
+        onChange={setTransferDate}
+      />
       <GuestPicker label='Passengers' />
       <div className='sm:col-span-2'>
         <SearchButton fullWidth />
       </div>
     </div>
+  )
+}
+
+/* ── Date Picker Fields ────────────────────────────────── */
+function DateRangeField({
+  label,
+  startDate,
+  endDate,
+  onChange
+}: {
+  label: string
+  startDate: Date | null
+  endDate: Date | null
+  onChange: (dates: [Date | null, Date | null]) => void
+}) {
+  return (
+    <AppReactDatepicker
+      selectsRange
+      monthsShown={2}
+      shouldCloseOnSelect={false}
+      minDate={createOffsetDate(0)}
+      selected={startDate}
+      startDate={startDate as Date}
+      endDate={endDate as Date}
+      dateFormat='MM/dd/yyyy'
+      portalId='datepicker-root'
+      id='date-range-picker'
+      popperProps={{ strategy: 'fixed' }}
+      onChange={dates => onChange(dates as [Date | null, Date | null])}
+      customInput={<CustomInput label={label} start={startDate as Date | number} end={endDate as Date | number} />}
+    />
+  )
+}
+
+function SingleDateField({
+  label,
+  selectedDate,
+  onChange
+}: {
+  label: string
+  selectedDate: Date | null
+  onChange: (date: Date | null) => void
+}) {
+  return (
+    <AppReactDatepicker
+      minDate={createOffsetDate(0)}
+      selected={selectedDate}
+      dateFormat='MM/dd/yyyy'
+      portalId='datepicker-root'
+      popperProps={{ strategy: 'fixed' }}
+      onChange={date => onChange(date as Date | null)}
+      customInput={<SingleCustomInput label={label} date={selectedDate} />}
+    />
   )
 }
 
@@ -223,10 +337,10 @@ function CambodiaLocationField({ label, placeholder }: { label: string; placehol
 
   const filtered = value.length > 0
     ? cambodiaLocations.flatMap(p =>
-        [p.province, ...p.cities]
-          .filter(n => n.toLowerCase().includes(value.toLowerCase()))
-          .map(n => ({ name: n, province: p.province }))
-      ).slice(0, 8)
+      [p.province, ...p.cities]
+        .filter(n => n.toLowerCase().includes(value.toLowerCase()))
+        .map(n => ({ name: n, province: p.province }))
+    ).slice(0, 8)
     : cambodiaLocations.map(p => ({ name: p.province, province: p.province }))
 
   return (
@@ -373,34 +487,3 @@ function SearchButton({ fullWidth = false }: { fullWidth?: boolean }) {
   )
 }
 
-/* ── Shared text field ─────────────────────────────────── */
-function SearchField({
-  icon: Icon,
-  label,
-  placeholder,
-  defaultValue
-}: {
-  icon: ComponentType<{ className?: string }>
-  label: string
-  placeholder: string
-  defaultValue?: string
-}) {
-  return (
-    <div>
-      <label className='block text-[11px] font-bold text-[#6B7280] mb-1.5 uppercase tracking-[0.08em]'>
-        {label}
-      </label>
-      <div className='relative group'>
-        <Icon className='absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF] group-focus-within:text-[#287DFA] transition-colors duration-200' />
-        <input
-          type='text'
-          placeholder={placeholder}
-          defaultValue={defaultValue}
-          className='w-full pl-10 pr-3 py-3 text-sm bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl text-[#111827] placeholder-[#9CA3AF]
-            focus:outline-none focus:ring-2 focus:ring-[#287DFA]/20 focus:border-[#287DFA] focus:bg-white
-            hover:border-[#D1D5DB] transition-all duration-200'
-        />
-      </div>
-    </div>
-  )
-}

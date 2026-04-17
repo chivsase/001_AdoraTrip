@@ -26,7 +26,7 @@ const deals: Deal[] = [
     id: '1',
     title: 'Angkor Wat Sunrise Tour',
     description: 'Private guided tour + breakfast, departing Siem Reap',
-    image: 'https://images.unsplash.com/photo-1578091880033-7b9b0baef249?w=500&h=320&fit=crop',
+    image: 'https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=500&h=320&fit=crop',
     originalPrice: 85,
     salePrice: 49,
     discount: 42,
@@ -101,15 +101,15 @@ const deals: Deal[] = [
 ]
 
 const badgeStyle: Record<string, string> = {
-  'Flash Sale':   'bg-[#EF4444] text-white',
-  'Hot Deal':     'bg-[#F59E0B] text-[#111827]',
+  'Flash Sale': 'bg-[#EF4444] text-white',
+  'Hot Deal': 'bg-[#F59E0B] text-[#111827]',
   'Member Price': 'bg-[#7C3AED] text-white',
-  'Best Seller':  'bg-[#287DFA] text-white'
+  'Best Seller': 'bg-[#287DFA] text-white'
 }
 
 const typeLabel: Record<Deal['type'], { label: string; color: string }> = {
-  tour:    { label: 'Tour',    color: 'text-[#059669] bg-[#ECFDF5]' },
-  hotel:   { label: 'Hotel',   color: 'text-[#7C3AED] bg-[#F5F3FF]' },
+  tour: { label: 'Tour', color: 'text-[#059669] bg-[#ECFDF5]' },
+  hotel: { label: 'Hotel', color: 'text-[#7C3AED] bg-[#F5F3FF]' },
   package: { label: 'Package', color: 'text-[#D97706] bg-[#FFFBEB]' }
 }
 

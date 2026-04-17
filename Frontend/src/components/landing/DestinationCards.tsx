@@ -24,7 +24,7 @@ const destinations: Destination[] = [
     name: 'Siem Reap',
     province: 'Siem Reap Province',
     tagline: 'Gateway to Angkor Wat',
-    image: 'https://images.unsplash.com/photo-1578091880033-7b9b0baef249?w=600&h=420&fit=crop',
+    image: 'https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=600&h=420&fit=crop',
     rating: 4.9,
     reviews: 8412,
     hotels: 450,

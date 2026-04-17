@@ -3,6 +3,7 @@ import InitColorSchemeScript from '@mui/material/InitColorSchemeScript'
 
 // Third-party Imports
 import 'react-perfect-scrollbar/dist/css/styles.css'
+import 'react-datepicker/dist/react-datepicker.css'
 
 // Font Imports
 import { Inter } from 'next/font/google'
@@ -42,6 +43,7 @@ const RootLayout = async (props: ChildrenType) => {
     <html id='__next' lang='en' dir={direction} suppressHydrationWarning className={inter.variable}>
       <body className='flex is-full min-bs-full flex-auto flex-col'>
         <InitColorSchemeScript attribute='data' defaultMode={systemMode} />
+        <div id='datepicker-root' />
         {children}
       </body>
     </html>
