@@ -55,12 +55,12 @@ type CustomInputProps = TextFieldProps & {
   start: Date | number | null
 }
 
-const CustomInput = forwardRef((props: CustomInputProps, ref) => {
-  const startDate = props.start ? formatDate(props.start, 'MM/dd/yyyy') : ''
-  const endDate = props.end ? ` - ${formatDate(props.end, 'MM/dd/yyyy')}` : null
+const CustomInput = forwardRef(({ start, end, label, ...props }: CustomInputProps, ref) => {
+  const startDate = start ? formatDate(start, 'MM/dd/yyyy') : ''
+  const endDate = end ? ` - ${formatDate(end, 'MM/dd/yyyy')}` : null
   const value = `${startDate}${endDate !== null ? endDate : ''}`
 
-  return <TextField fullWidth inputRef={ref} label={props.label || ''} {...props} value={value} />
+  return <TextField fullWidth inputRef={ref} label={label || ''} {...props} value={value} />
 })
 
 type SingleCustomInputProps = TextFieldProps & {
@@ -68,10 +68,10 @@ type SingleCustomInputProps = TextFieldProps & {
   date: Date | null
 }
 
-const SingleCustomInput = forwardRef((props: SingleCustomInputProps, ref) => {
-  const value = props.date ? formatDate(props.date, 'MM/dd/yyyy') : ''
+const SingleCustomInput = forwardRef(({ date, label, ...props }: SingleCustomInputProps, ref) => {
+  const value = date ? formatDate(date, 'MM/dd/yyyy') : ''
 
-  return <TextField fullWidth inputRef={ref} label={props.label || ''} {...props} value={value} />
+  return <TextField fullWidth inputRef={ref} label={label || ''} {...props} value={value} />
 })
 
 export default function HeroSearch() {
