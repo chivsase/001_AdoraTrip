@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
-import { Clock, Flame, ArrowRight, Zap, Percent, MapPin } from 'lucide-react'
+import { Clock, Flame, ArrowRight, Zap, MapPin } from 'lucide-react'
 import Link from 'next/link'
 
 interface Deal {
@@ -101,47 +101,54 @@ const deals: Deal[] = [
 ]
 
 const badgeStyle: Record<string, string> = {
-  'Flash Sale': 'bg-[#EF4444] text-white',
-  'Hot Deal': 'bg-[#F59E0B] text-[#111827]',
-  'Member Price': 'bg-[#7C3AED] text-white',
+  'Flash Sale': 'bg-red-500 text-white',
+  'Hot Deal': 'bg-amber-400 text-amber-900',
+  'Member Price': 'bg-violet-600 text-white',
   'Best Seller': 'bg-[#287DFA] text-white'
 }
 
 const typeLabel: Record<Deal['type'], { label: string; color: string }> = {
-  tour: { label: 'Tour', color: 'text-[#059669] bg-[#ECFDF5]' },
-  hotel: { label: 'Hotel', color: 'text-[#7C3AED] bg-[#F5F3FF]' },
-  package: { label: 'Package', color: 'text-[#D97706] bg-[#FFFBEB]' }
+  tour: { label: 'Tour', color: 'text-emerald-700 bg-emerald-50 border border-emerald-100' },
+  hotel: { label: 'Hotel', color: 'text-violet-700  bg-violet-50  border border-violet-100' },
+  package: { label: 'Package', color: 'text-amber-700   bg-amber-50   border border-amber-100' }
 }
 
 function useCountdown(target: Date) {
   const [mounted, setMounted] = useState(false)
   const [diff, setDiff] = useState(0)
+
   useEffect(() => {
     setMounted(true)
     setDiff(Math.max(0, target.getTime() - Date.now()))
     const id = setInterval(() => setDiff(Math.max(0, target.getTime() - Date.now())), 1000)
     return () => clearInterval(id)
   }, [target])
+
   const days = Math.floor(diff / 86400_000)
   const h = Math.floor((diff % 86400_000) / 3600_000)
   const m = Math.floor((diff % 3600_000) / 60_000)
   const s = Math.floor((diff % 60_000) / 1000)
+
   return { days, h, m, s, expired: mounted && diff === 0, mounted }
 }
 
-function Countdown({ target }: { target: Date }) {
+function CountdownTimer({ target }: { target: Date }) {
   const { days, h, m, s, expired, mounted } = useCountdown(target)
+
   if (!mounted) return (
-    <span className='flex items-center gap-1 text-[10px] font-bold text-white/90 tabular-nums'>
-      <Clock className='w-3 h-3' />--:--:--
+    <span className='flex items-center gap-1 text-[10px] text-white/70 tabular-nums'>
+      <Clock className='w-3 h-3' /> --:--:--
     </span>
   )
-  if (expired) return <span className='text-[10px] text-[#FCA5A5] font-bold'>Expired</span>
+
+  if (expired) return <span className='text-[10px] text-red-300 font-medium'>Expired</span>
+
   const display = days > 0
     ? `${days}d ${String(h).padStart(2, '0')}h left`
     : `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
+
   return (
-    <span className='flex items-center gap-1 text-[10px] font-bold text-white/90 tabular-nums'>
+    <span className='flex items-center gap-1 text-[10px] text-white/80 font-medium tabular-nums'>
       <Clock className='w-3 h-3' />
       {display}
     </span>
@@ -150,36 +157,34 @@ function Countdown({ target }: { target: Date }) {
 
 export default function DealsSection() {
   return (
-    <section className='py-16 md:py-24 bg-white'>
+    <section className='py-20 bg-white'>
       <div className='max-w-[1240px] mx-auto px-4 sm:px-6'>
 
         {/* Header */}
-        <div className='flex flex-col md:flex-row items-start md:items-end justify-between mb-12 gap-4'>
-          <div className='animate-in fade-in slide-in-from-left-6 duration-1000 fill-mode-both'>
-            {/* Eyebrow */}
-            <div className='inline-flex items-center gap-2 bg-[#FEF2F2] text-[#DC2626] text-[10px] font-black uppercase tracking-[0.2em] px-4 py-1.5 rounded-full mb-4'>
-              <Flame className='w-4 h-4 mr-0.5 animate-pulse' />
+        <div className='flex flex-col sm:flex-row items-start sm:items-end justify-between mb-10 gap-5'>
+          <div>
+            <p className='flex items-center gap-2 text-red-500 text-[11px] font-semibold uppercase tracking-[0.2em] mb-3'>
+              <Flame className='w-3.5 h-3.5' />
               Limited Time Deals
-            </div>
-            <h2 className='text-[2rem] sm:text-4xl font-[900] text-[#0F172A] tracking-tight leading-tight'>
+            </p>
+            <h2 className='text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight leading-tight'>
               Today&apos;s Best Deals
             </h2>
-            <p className='mt-3 text-base text-[#64748B] max-w-lg'>
-              Grab these exclusive, time-sensitive discounts on premium hotels, 
-              cultural tours, and complete vacation packages.
+            <p className='mt-2 text-sm text-slate-500 max-w-md leading-relaxed'>
+              Exclusive discounts on hotels, tours, and packages — grab them before they&apos;re gone.
             </p>
           </div>
           <Link
             href='/deals'
-            className='flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-[#DC2626] bg-[#FEF2F2] hover:bg-[#DC2626] hover:text-white transition-all duration-300 group whitespace-nowrap animate-in fade-in slide-in-from-right-6 duration-1000 fill-mode-both'
+            className='hidden sm:flex items-center gap-2 text-sm font-semibold text-red-500 border border-red-200 hover:border-red-500 bg-white hover:bg-red-500 hover:text-white px-5 py-2.5 rounded-xl transition-all duration-300 whitespace-nowrap group'
           >
             All Deals
-            <ArrowRight className='w-4 h-4 group-hover:translate-x-1 transition-transform duration-300' />
+            <ArrowRight className='w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-300' />
           </Link>
         </div>
 
         {/* Grid */}
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-7'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5'>
           {deals.map((deal, idx) => {
             const tl = typeLabel[deal.type]
 
@@ -187,82 +192,85 @@ export default function DealsSection() {
               <Link
                 key={deal.id}
                 href={`/deals/${deal.id}`}
-                className='group bg-white rounded-3xl overflow-hidden border border-[#F1F5F9] hover:border-transparent hover:shadow-[0_25px_60px_-15px_rgba(0,0,0,0.12)] transition-all duration-500 hover:-translate-y-2 animate-in fade-in zoom-in-95 duration-700 fill-mode-both'
-                style={{ animationDelay: `${idx * 150}ms` }}
+                className='group bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 animate-in fade-in zoom-in-95 duration-500 fill-mode-both'
+                style={{ animationDelay: `${idx * 100}ms` }}
               >
                 {/* Image */}
-                <div className='relative h-60 overflow-hidden'>
+                <div className='relative h-52 overflow-hidden'>
                   <Image
                     src={deal.image}
                     alt={deal.title}
                     fill
                     sizes='(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw'
-                    className='object-cover group-hover:scale-110 transition-transform duration-700 ease-out'
+                    className='object-cover group-hover:scale-105 transition-transform duration-500 ease-out'
                   />
+                  <div className='absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent' />
 
-                  {/* Discount chip */}
-                  <div className='absolute top-4 right-4 flex items-center gap-1 bg-[#EF4444] text-white text-[10px] font-black px-3 py-1.5 rounded-xl shadow-lg'>
-                    <Percent className='w-3 h-3' />
-                    {deal.discount}% OFF
+                  {/* Discount pill */}
+                  <div className='absolute top-3 right-3 bg-red-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full'>
+                    -{deal.discount}%
                   </div>
 
                   {/* Special badge */}
                   {deal.badge && (
-                    <span className={`absolute top-4 left-4 text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-lg backdrop-blur-md border border-white/10 ${badgeStyle[deal.badge] ?? 'bg-[#287DFA] text-white'}`}>
-                      <Zap className='w-3 h-3' />
+                    <span className={`absolute top-3 left-3 text-[9px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full flex items-center gap-1 ${badgeStyle[deal.badge] ?? 'bg-[#287DFA] text-white'}`}>
+                      <Zap className='w-2.5 h-2.5' />
                       {deal.badge}
                     </span>
                   )}
 
-                  {/* Countdown + location overlay */}
-                  <div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent px-5 py-4 flex items-center justify-between'>
-                    <span className='flex items-center gap-1.5 text-[11px] text-white/90 font-bold'>
-                      <MapPin className='w-3.5 h-3.5 text-[#FFD166]' />
+                  {/* Bottom overlay */}
+                  <div className='absolute bottom-0 left-0 right-0 px-4 py-3 flex items-center justify-between'>
+                    <span className='flex items-center gap-1 text-[10px] text-white/80 font-medium'>
+                      <MapPin className='w-3 h-3' />
                       {deal.location}
                     </span>
-                    <Countdown target={deal.expiresAt} />
+                    <CountdownTimer target={deal.expiresAt} />
                   </div>
                 </div>
 
                 {/* Body */}
-                <div className='p-6'>
-                  <div className='flex items-center gap-2 mb-3'>
-                    <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg ${tl.color}`}>
-                      {tl.label}
-                    </span>
-                  </div>
+                <div className='p-4'>
+                  <span className={`inline-block text-[9px] font-semibold uppercase tracking-wide px-2 py-0.5 rounded-full mb-2.5 ${tl.color}`}>
+                    {tl.label}
+                  </span>
 
-                  <h3 className='text-lg font-black text-[#0F172A] group-hover:text-[#287DFA] transition-colors duration-300 leading-snug h-[3.5rem] line-clamp-2'>
+                  <h3 className='text-sm font-semibold text-slate-900 group-hover:text-[#287DFA] transition-colors duration-300 leading-snug line-clamp-2 mb-1.5'>
                     {deal.title}
                   </h3>
-                  <p className='text-[13px] text-[#64748B] mt-2 line-clamp-2 leading-relaxed font-medium'>{deal.description}</p>
+                  <p className='text-xs text-slate-500 line-clamp-1 leading-relaxed'>
+                    {deal.description}
+                  </p>
 
                   {/* Price row */}
-                  <div className='mt-6 flex items-center justify-between'>
-                    <div className='flex flex-col'>
-                      <span className='text-[10px] text-[#94A3B8] font-bold uppercase line-through'>${deal.originalPrice}</span>
-                      <div className='flex items-baseline gap-1'>
-                        <span className='text-2xl font-black text-[#F59E0B]'>${deal.salePrice}</span>
-                        <span className='text-[10px] text-[#94A3B8] font-bold'>/ total</span>
-                      </div>
+                  <div className='flex items-center justify-between pt-3.5 mt-3.5 border-t border-slate-100'>
+                    <div>
+                      <p className='text-[10px] text-slate-400 line-through'>${deal.originalPrice}</p>
+                      <p className='text-lg font-bold text-slate-900'>
+                        ${deal.salePrice}
+                        <span className='text-[10px] font-normal text-slate-400 ml-1'>/ total</span>
+                      </p>
                     </div>
-                    <div className='flex flex-col items-end'>
-                      <span className='text-[10px] font-black text-[#DC2626] bg-[#FEF2F2] px-3 py-1.5 rounded-xl'>
-                        You Save ${deal.originalPrice - deal.salePrice}
-                      </span>
-                    </div>
+                    <span className='text-[10px] font-semibold text-red-500 bg-red-50 border border-red-100 px-2.5 py-1 rounded-lg'>
+                      Save ${deal.originalPrice - deal.salePrice}
+                    </span>
                   </div>
                 </div>
               </Link>
             )
           })}
         </div>
+
         {/* Mobile CTA */}
-        <div className='flex justify-center mt-12 sm:hidden'>
-          <Link href='/deals' className='flex items-center gap-2 text-sm font-bold text-[#DC2626] bg-[#FEF2F2] px-6 py-3 rounded-xl'>
-            View All Deals <ArrowRight className='w-4 h-4' />
+        <div className='flex justify-center mt-8 sm:hidden'>
+          <Link
+            href='/deals'
+            className='flex items-center gap-2 text-sm font-semibold text-red-500 bg-white border border-red-200 px-6 py-3 rounded-xl'
+          >
+            All Deals <ArrowRight className='w-4 h-4' />
           </Link>
         </div>
+
       </div>
     </section>
   )

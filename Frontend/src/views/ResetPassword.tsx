@@ -130,8 +130,11 @@ const ResetPasswordV2 = ({ mode }: { mode: Mode }) => {
           maskImg={{ src: authBackground }}
         />
       </div>
-      <div className='flex justify-center items-center bs-full bg-backgroundPaper !min-is-full p-6 md:!min-is-[unset] md:p-12 md:is-[480px]'>
-        <Link className='absolute block-start-5 sm:block-start-[38px] inline-start-6 sm:inline-start-[38px]'>
+      <div className='flex justify-center items-center bs-full bg-backgroundPaper !min-is-full p-6 md:!min-is-[unset] md:p-12 md:is-[480px] relative'>
+        <Link
+          href='/'
+          className='absolute block-start-5 sm:block-start-[38px] inline-start-6 sm:inline-start-[38px] z-[10] block'
+        >
           <Logo />
         </Link>
         <div className='flex flex-col gap-5 is-full sm:is-auto md:is-full sm:max-is-[400px] md:max-is-[unset]'>

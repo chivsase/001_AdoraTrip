@@ -165,7 +165,7 @@ const Login = ({ mode }: { mode: Mode }) => {
 
           <form
             noValidate
-            action={() => {}}
+            action={() => { }}
             autoComplete='off'
             onSubmit={handleSubmit(onSubmit)}
             className='flex flex-col gap-5'
