@@ -59,23 +59,25 @@ const CustomThemeProvider = (props: Props) => {
 
   // Merge the primary color scheme override with the core theme
   const theme = useMemo(() => {
+    const primaryColor = settings.primaryColor || '#7c4dff' // Hardcoded fallback just in case
+    
     const newTheme = {
       colorSchemes: {
         light: {
           palette: {
             primary: {
-              main: settings.primaryColor,
-              light: lighten(settings.primaryColor as string, 0.2),
-              dark: darken(settings.primaryColor as string, 0.1)
+              main: primaryColor,
+              light: lighten(primaryColor as string, 0.2),
+              dark: darken(primaryColor as string, 0.1)
             }
           }
         },
         dark: {
           palette: {
             primary: {
-              main: settings.primaryColor,
-              light: lighten(settings.primaryColor as string, 0.2),
-              dark: darken(settings.primaryColor as string, 0.1)
+              main: primaryColor,
+              light: lighten(primaryColor as string, 0.2),
+              dark: darken(primaryColor as string, 0.1)
             }
           }
         }

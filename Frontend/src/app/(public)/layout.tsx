@@ -17,7 +17,7 @@ import Providers from '@components/Providers'
 
 const PublicLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <Providers direction="ltr">
+    <Providers direction="ltr" forceMode="light">
       <PublicShell>{children}</PublicShell>
     </Providers>
   )

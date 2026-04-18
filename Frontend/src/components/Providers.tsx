@@ -1,5 +1,5 @@
-// Type Imports
-import type { ChildrenType, Direction } from '@core/types'
+import type { ChildrenType, Direction, Mode } from '@core/types'
+import type { Settings } from '@core/contexts/settingsContext'
 
 // Context Imports
 import { VerticalNavProvider } from '@menu/contexts/verticalNavContext'
@@ -12,15 +12,22 @@ import { getMode, getSettingsFromCookie, getSystemMode } from '@core/utils/serve
 
 type Props = ChildrenType & {
   direction: Direction
+  forceMode?: Mode
 }
 
 const Providers = async (props: Props) => {
   // Props
-  const { children, direction } = props
+  const { children, direction, forceMode } = props
 
   // Vars
-  const mode = await getMode()
+  const mode = forceMode || await getMode()
   const settingsCookie = await getSettingsFromCookie()
+  
+  // If we are forcing a mode, ensure the cookie reflects that for this session
+  if (forceMode && settingsCookie && Object.keys(settingsCookie).length > 0) {
+    settingsCookie.mode = forceMode
+  }
+  
   const systemMode = await getSystemMode()
 
   return (
