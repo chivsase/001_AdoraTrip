@@ -31,7 +31,13 @@
       "Bash(grep -l \"'use client'\" c:/wamp64/www/AdoraTrip/Frontend/src/components/landing/*.tsx)",
       "Bash(grep -rL \"'use client'\" c:/wamp64/www/AdoraTrip/Frontend/src/components/landing/*.tsx)",
       "Bash(wc -l \"c:\\\\wamp64\\\\www\\\\AdoraTrip\\\\Frontend\\\\src\\\\components\\\\landing\"/*.tsx)",
-      "WebFetch(domain:demos.themeselection.com)"
+      "WebFetch(domain:demos.themeselection.com)",
+      "Bash(.venv/Scripts/python.exe manage.py makemigrations cms inventory deals)",
+      "Bash(.venv/Scripts/python.exe manage.py seed_deals)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts|js|json\\)$\")",
+      "Bash(.venv/Scripts/python.exe manage.py makemigrations --check)",
+      "Bash(npx tsc *)",
+      "Bash(node -e ' *)"
     ]
   }
 }

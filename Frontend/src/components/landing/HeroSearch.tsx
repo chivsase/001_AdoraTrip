@@ -1,23 +1,13 @@
 'use client'
 
 import { useState, useRef, useEffect, forwardRef } from 'react'
-import {
-  Hotel,
-  Compass,
-  Car,
-  MapPin,
-  Users,
-  Search,
-  ChevronDown,
-  Plus,
-  Minus,
-  ArrowRight,
-  Calendar
-} from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import { MapPin, Hotel, Compass, Car, ChevronDown, Calendar, Search, Waves, Users, Plus, Minus, ArrowRight } from 'lucide-react'
 
 import TextField from '@mui/material/TextField'
 import type { TextFieldProps } from '@mui/material/TextField'
-import { formatDate } from 'date-fns/format'
+import { format } from 'date-fns'
 
 import AppReactDatepicker from '@/libs/styles/AppReactDatepicker'
 
@@ -58,8 +48,8 @@ type CustomInputProps = TextFieldProps & {
 
 const CustomInput = forwardRef(({ start, end, label, ...props }: CustomInputProps, ref) => {
   const { size, color, fullWidth, variant, ...rest } = props as any
-  const startDate = start ? formatDate(start, 'MM/dd/yyyy') : ''
-  const endDate = end ? ` - ${formatDate(end, 'MM/dd/yyyy')}` : null
+  const startDate = start ? format(start, 'MM/dd/yyyy') : ''
+  const endDate = end ? ` - ${format(end, 'MM/dd/yyyy')}` : null
   const value = `${startDate}${endDate !== null ? endDate : ''}`
 
   return (
@@ -92,7 +82,7 @@ type SingleCustomInputProps = TextFieldProps & {
 
 const SingleCustomInput = forwardRef(({ date, label, ...props }: SingleCustomInputProps, ref) => {
   const { size, color, fullWidth, variant, ...rest } = props as any
-  const value = date ? formatDate(date, 'MM/dd/yyyy') : ''
+  const value = date ? format(date, 'MM/dd/yyyy') : ''
 
   return (
     <div className='relative'>
@@ -118,27 +108,32 @@ const SingleCustomInput = forwardRef(({ date, label, ...props }: SingleCustomInp
 })
 
 export default function HeroSearch() {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState('hotels')
 
   return (
     <section className='relative'>
       {/* ── Background ── */}
       <div className='absolute inset-0 overflow-hidden'>
-        {/* Deep rich gradient */}
-        <div className='absolute inset-0 bg-gradient-to-br from-[#071C47] via-[#0D3172] to-[#1760F5]' />
-        {/* Warm golden accent top-right */}
-        <div className='absolute inset-0 bg-[radial-gradient(ellipse_at_80%_0%,rgba(255,180,0,0.12),transparent_55%)]' />
-        {/* Soft glow bottom-left */}
-        <div className='absolute inset-0 bg-[radial-gradient(ellipse_at_0%_100%,rgba(40,125,250,0.20),transparent_50%)]' />
-        {/* Fine dot mesh */}
-        <div
-          className='absolute inset-0 opacity-[0.07]'
-          style={{
-            backgroundImage:
-              'radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px)',
-            backgroundSize: '28px 28px'
-          }}
+        <Image
+          src='/images/landing/hero.png'
+          alt='Angkor Wat Sunrise'
+          fill
+          priority
+          className='object-cover'
         />
+        {/* Deep rich overlay for text readability */}
+        <div className='absolute inset-0 bg-gradient-to-br from-[#071C47]/90 via-[#0D3172]/70 to-[#1760F5]/50' />
+        {/* Soft radial glows */}
+        <div className='absolute inset-0 bg-[radial-gradient(ellipse_at_80%_0%,rgba(255,180,0,0.15),transparent_60%)]' />
+        <div className='absolute inset-0 bg-[radial-gradient(ellipse_at_0%_100%,rgba(40,125,250,0.25),transparent_55%)]' />
+        
+        {/* Section Divider (Wave) */}
+        <div className='absolute bottom-0 left-0 right-0 h-24 overflow-hidden pointer-events-none translate-y-[1px]'>
+          <svg className='absolute bottom-0 w-[200%] h-full text-white fill-current' viewBox='0 0 1000 100' preserveAspectRatio='none'>
+            <path d='M0 100 C 250 100, 250 20, 500 60 C 750 100, 750 20, 1000 60 L 1000 100 L 0 100' />
+          </svg>
+        </div>
       </div>
 
       {/* ── Content ── */}
@@ -205,9 +200,9 @@ export default function HeroSearch() {
           {/* Form card */}
           <div className='bg-white rounded-[24px] shadow-[0_32px_80px_-20px_rgba(0,0,0,0.3)] p-5 sm:p-8 relative z-20'>
             <div className='absolute -top-6 left-12 w-12 h-12 bg-white rotate-45 hidden sm:block -z-10' />
-            {activeTab === 'hotels' && <HotelSearchForm />}
-            {activeTab === 'tours' && <ToursSearchForm />}
-            {activeTab === 'transfers' && <TransfersForm />}
+            {activeTab === 'hotels' && <HotelSearchForm onSearch={(params) => router.push(`/hotels?${params}`)} />}
+            {activeTab === 'tours' && <ToursSearchForm onSearch={(params) => router.push(`/tours?${params}`)} />}
+            {activeTab === 'transfers' && <TransfersForm onSearch={(params) => router.push(`/transfers?${params}`)} />}
           </div>
         </div>
 
@@ -231,7 +226,8 @@ export default function HeroSearch() {
 }
 
 /* ── Hotel Search ──────────────────────────────────────── */
-function HotelSearchForm() {
+function HotelSearchForm({ onSearch }: { onSearch: (qs: string) => void }) {
+  const [location, setLocation] = useState('')
   const [startDate, setStartDate] = useState<Date | null>(() => createOffsetDate(1))
   const [endDate, setEndDate] = useState<Date | null>(() => createOffsetDate(4))
 
@@ -242,10 +238,24 @@ function HotelSearchForm() {
     setEndDate(end)
   }
 
+  const handleSearch = () => {
+    const params = new URLSearchParams({
+      destination: location,
+      check_in: startDate ? format(startDate, 'yyyy-MM-dd') : '',
+      check_out: endDate ? format(endDate, 'yyyy-MM-dd') : '',
+    })
+    onSearch(params.toString())
+  }
+
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4'>
       <div className='lg:col-span-5'>
-        <CambodiaLocationField label='Province / City' placeholder='Where in Cambodia?' />
+        <CambodiaLocationField 
+          label='Province / City' 
+          placeholder='Where in Cambodia?' 
+          value={location}
+          onChange={setLocation}
+        />
       </div>
       <div className='lg:col-span-4'>
         <DateRangeField
@@ -259,20 +269,34 @@ function HotelSearchForm() {
         <GuestPicker label='Guests & Rooms' />
       </div>
       <div className='sm:col-span-2 lg:col-span-12 mt-2'>
-        <SearchButton fullWidth />
+        <SearchButton fullWidth onClick={handleSearch} />
       </div>
     </div>
   )
 }
 
 /* ── Tours Search ──────────────────────────────────────── */
-function ToursSearchForm() {
+function ToursSearchForm({ onSearch }: { onSearch: (qs: string) => void }) {
+  const [location, setLocation] = useState('')
   const [tourDate, setTourDate] = useState<Date | null>(() => createOffsetDate(1))
+
+  const handleSearch = () => {
+    const params = new URLSearchParams({
+      destination: location,
+      date: tourDate ? format(tourDate, 'yyyy-MM-dd') : '',
+    })
+    onSearch(params.toString())
+  }
 
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
       <div className='sm:col-span-2'>
-        <CambodiaLocationField label='Province / City' placeholder='Choose a destination' />
+        <CambodiaLocationField 
+          label='Province / City' 
+          placeholder='Choose a destination' 
+          value={location}
+          onChange={setLocation}
+        />
       </div>
       <SingleDateField label='Date' selectedDate={tourDate} onChange={setTourDate} />
       <GuestPicker label='Participants' />
@@ -281,26 +305,48 @@ function ToursSearchForm() {
           {['Angkor Wat', 'Tuk-tuk Tour', 'Cooking Class', 'Boat Trip', 'Zip-line', 'Cycling'].map(c => (
             <button
               key={c}
+              onClick={() => setLocation(c)}
               className='text-xs px-3 py-1.5 rounded-full bg-[#F0F5FF] text-[#287DFA] font-medium hover:bg-[#DDEAFF] transition-colors duration-200'
             >
               {c}
             </button>
           ))}
         </div>
-        <SearchButton fullWidth />
+        <SearchButton fullWidth onClick={handleSearch} />
       </div>
     </div>
   )
 }
 
 /* ── Transfers ─────────────────────────────────────────── */
-function TransfersForm() {
+function TransfersForm({ onSearch }: { onSearch: (qs: string) => void }) {
+  const [from, setFrom] = useState('')
+  const [to, setTo] = useState('')
   const [transferDate, setTransferDate] = useState<Date | null>(() => createOffsetDate(1))
+
+  const handleSearch = () => {
+    const params = new URLSearchParams({
+      origin: from,
+      destination: to,
+      date: transferDate ? format(transferDate, 'yyyy-MM-dd') : '',
+    })
+    onSearch(params.toString())
+  }
 
   return (
     <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
-      <CambodiaLocationField label='From' placeholder='Pickup location' />
-      <CambodiaLocationField label='To' placeholder='Drop-off location' />
+      <CambodiaLocationField 
+        label='From' 
+        placeholder='Pickup location' 
+        value={from}
+        onChange={setFrom}
+      />
+      <CambodiaLocationField 
+        label='To' 
+        placeholder='Drop-off location' 
+        value={to}
+        onChange={setTo}
+      />
       <SingleDateField
         label='Date'
         selectedDate={transferDate}
@@ -308,7 +354,7 @@ function TransfersForm() {
       />
       <GuestPicker label='Passengers' />
       <div className='sm:col-span-2'>
-        <SearchButton fullWidth />
+        <SearchButton fullWidth onClick={handleSearch} />
       </div>
     </div>
   )
@@ -364,9 +410,18 @@ function SingleDateField({
 }
 
 /* ── Cambodia Location Dropdown ────────────────────────── */
-function CambodiaLocationField({ label, placeholder }: { label: string; placeholder: string }) {
+function CambodiaLocationField({ 
+  label, 
+  placeholder, 
+  value, 
+  onChange 
+}: { 
+  label: string; 
+  placeholder: string;
+  value: string;
+  onChange: (v: string) => void
+}) {
   const [open, setOpen] = useState(false)
-  const [value, setValue] = useState('')
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -396,7 +451,7 @@ function CambodiaLocationField({ label, placeholder }: { label: string; placehol
           type='text'
           value={value}
           placeholder={placeholder}
-          onChange={e => { setValue(e.target.value); setOpen(true) }}
+          onChange={e => { onChange(e.target.value); setOpen(true) }}
           onFocus={() => setOpen(true)}
           className='w-full pl-10 pr-8 py-3 text-sm bg-[#F5F7FA] border border-[#E5E7EB] rounded-xl text-[#111827] placeholder-[#6B7280]
             focus:outline-none focus:ring-2 focus:ring-[#287DFA]/20 focus:border-[#287DFA] focus:bg-white
@@ -414,7 +469,7 @@ function CambodiaLocationField({ label, placeholder }: { label: string; placehol
               <button
                 key={i}
                 type='button'
-                onClick={() => { setValue(loc.name); setOpen(false) }}
+                onClick={() => { onChange(loc.name); setOpen(false) }}
                 className='w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left hover:bg-[#F0F5FF] transition-colors duration-150'
               >
                 <MapPin className='w-3.5 h-3.5 text-[#287DFA] shrink-0' />
@@ -518,9 +573,16 @@ function GuestPicker({ label = 'Guests & Rooms' }: { label?: string }) {
 }
 
 /* ── Search Button ─────────────────────────────────────── */
-function SearchButton({ fullWidth = false }: { fullWidth?: boolean }) {
+function SearchButton({ 
+  fullWidth = false,
+  onClick
+}: { 
+  fullWidth?: boolean;
+  onClick?: () => void
+}) {
   return (
     <button
+      onClick={onClick}
       className={`relative group flex items-center justify-center gap-3 bg-[#287DFA] hover:bg-[#1a6ae0] active:scale-95 text-white font-bold text-base py-4 px-10 rounded-2xl transition-all duration-500 shadow-[0_12px_24px_-8px_rgba(40,125,250,0.5)] hover:shadow-[0_20px_40px_-10px_rgba(40,125,250,0.6)] overflow-hidden ${fullWidth ? 'w-full' : 'w-full sm:col-span-1'}`}
     >
       <div className='absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out' />

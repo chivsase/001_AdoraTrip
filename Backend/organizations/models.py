@@ -53,6 +53,11 @@ class Organization(models.Model):
     registration_no  = models.CharField(max_length=100, blank=True)   # KYC
     tax_id           = models.CharField(max_length=100, blank=True)
 
+    # Marketplace / Payout info
+    aba_account_id           = models.CharField(max_length=100, blank=True)   # ABA PayWay Merchant ID
+    commission_rate_default  = models.DecimalField(max_digits=5, decimal_places=2, default=15.00)
+    is_approved              = models.BooleanField(default=False)             # Super admin gate
+
     # Platform relation
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

@@ -454,6 +454,73 @@ class AdminUserDetailView(GenericAPIView):
         return Response(AdminUserListSerializer(user).data)
 
 
+# ─── Dashboard Stats ───────────────────────────────────────────────────────────
+
+class DashboardStatsView(APIView):
+    """
+    GET /api/v1/auth/me/stats/
+    Returns a personalised stats summary for the current user's dashboard.
+    Response shape varies by platform_role.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        role = user.platform_role
+
+        # Traveler stats
+        if role == 'TRAVELER':
+            from api.models import Booking
+            bookings_qs = Booking.objects.filter(user=user)
+            return Response({
+                'role': role,
+                'total_bookings': bookings_qs.count(),
+                'confirmed_bookings': bookings_qs.filter(status='confirmed').count(),
+                'pending_bookings': bookings_qs.filter(status='pending').count(),
+                'completed_bookings': bookings_qs.filter(status='completed').count(),
+                'cancelled_bookings': bookings_qs.filter(status='cancelled').count(),
+                'rewards_points': 0,
+                'total_spent': 0,
+            })
+
+        # Partner stats
+        if role in ('PARTNER_OWNER', 'PARTNER_MANAGER', 'PARTNER_STAFF', 'PARTNER_FINANCE',
+                    'LOCAL_GUIDE', 'TRANSPORT_PROVIDER'):
+            from api.models import Booking
+            from organizations.models import Organization, OrganizationMembership
+            memberships = OrganizationMembership.objects.filter(user=user, is_active=True).select_related('organization')
+            org_ids = [m.organization_id for m in memberships]
+            bookings_qs = Booking.objects.filter(organization_id__in=org_ids)
+            return Response({
+                'role': role,
+                'organizations': len(org_ids),
+                'total_bookings': bookings_qs.count(),
+                'pending_bookings': bookings_qs.filter(status='pending').count(),
+                'confirmed_bookings': bookings_qs.filter(status='confirmed').count(),
+                'completed_bookings': bookings_qs.filter(status='completed').count(),
+                'total_revenue': 0,
+                'pending_payout': 0,
+            })
+
+        # Super Admin / Platform Staff stats
+        if role in ('SUPER_ADMIN', 'PLATFORM_STAFF'):
+            from django.contrib.auth import get_user_model
+            from organizations.models import Organization, OrganizationStatus
+            from deals.models import Deal
+            UserModel = get_user_model()
+            return Response({
+                'role': role,
+                'total_users': UserModel.objects.filter(is_active=True).count(),
+                'total_organizations': Organization.objects.count(),
+                'pending_organizations': Organization.objects.filter(status=OrganizationStatus.PENDING).count(),
+                'active_organizations': Organization.objects.filter(status=OrganizationStatus.ACTIVE).count(),
+                'active_deals': Deal.objects.filter(is_active=True).count(),
+                'total_revenue': 0,
+            })
+
+        return Response({'role': role})
+
+
 # ─── OAuth Callback (JWT bridge) ───────────────────────────────────────────────
 
 class OAuthCallbackView(APIView):

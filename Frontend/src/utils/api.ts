@@ -200,4 +200,240 @@ export const settingsApi = {
     }),
 }
 
+// ── Dashboard Stats ───────────────────────────────────────────────────────────
+
+export const statsApi = {
+  me: () => request<Record<string, unknown>>('/auth/me/stats/', { method: 'GET' }),
+}
+
+// ── Bookings ──────────────────────────────────────────────────────────────────
+
+export interface BookingListItem {
+  id: string
+  reference: string
+  status: 'pending' | 'confirmed' | 'cancelled' | 'completed'
+  total: string
+  created_at: string
+  tour?: { id: string; title: string }
+  guest_name: string
+  booking_date: string
+  participants: number
+}
+
+export const bookingsApi = {
+  list: (params?: { status?: string; page?: number }) => {
+    const qs = new URLSearchParams()
+    if (params?.status) qs.set('status', params.status)
+    if (params?.page) qs.set('page', String(params.page))
+    return request<{ count: number; results: BookingListItem[] }>(`/bookings/?${qs}`, { method: 'GET' })
+  },
+
+  get: (id: string) =>
+    request<BookingListItem>(`/bookings/${id}/`, { method: 'GET' }),
+
+  cancel: (id: string) =>
+    request<BookingListItem>(`/bookings/${id}/cancel/`, { method: 'POST' }),
+
+  // Vendor actions
+  confirm: (id: string) =>
+    request<BookingListItem>(`/bookings/${id}/confirm/`, { method: 'POST' }),
+
+  pending: () =>
+    request<BookingListItem[]>('/bookings/pending_bookings/', { method: 'GET' }),
+}
+
+// ── Organizations ─────────────────────────────────────────────────────────────
+
+export interface OrgData {
+  id: string
+  slug: string
+  name: string
+  org_type: string
+  status: string
+  business_email: string
+  business_phone: string
+  address: string
+  city: string
+  created_at: string
+}
+
+export const organizationsApi = {
+  mine: () =>
+    request<OrgData[]>('/organizations/mine/', { method: 'GET' }),
+
+  get: (id: string) =>
+    request<OrgData>(`/organizations/${id}/`, { method: 'GET' }),
+
+  create: (data: Partial<OrgData>) =>
+    request<OrgData>('/organizations/', {
+      method: 'POST',
+      body: data as unknown as Record<string, unknown>,
+    }),
+
+  update: (id: string, data: Partial<OrgData>) =>
+    request<OrgData>(`/organizations/${id}/`, {
+      method: 'PATCH',
+      body: data as unknown as Record<string, unknown>,
+    }),
+
+  members: (orgId: string) =>
+    request<unknown[]>(`/organizations/${orgId}/members/`, { method: 'GET' }),
+
+  invite: (orgId: string, data: { email: string; role: string }) =>
+    request<{ detail: string }>(`/organizations/${orgId}/members/invite/`, {
+      method: 'POST',
+      body: data as unknown as Record<string, unknown>,
+    }),
+}
+
+// ── Inventory (Vendor Listings) ───────────────────────────────────────────────
+
+export const inventoryApi = {
+  hotels: (params?: Record<string, string>) => {
+    const qs = new URLSearchParams(params)
+    return request<{ count: number; results: unknown[] }>(`/hotels/?${qs}`, { method: 'GET' })
+  },
+  tours: (params?: Record<string, string>) => {
+    const qs = new URLSearchParams(params)
+    return request<{ count: number; results: unknown[] }>(`/tours/?${qs}`, { method: 'GET' })
+  },
+  attractions: (params?: Record<string, string>) => {
+    const qs = new URLSearchParams(params)
+    return request<{ count: number; results: unknown[] }>(`/attractions/?${qs}`, { method: 'GET' })
+  },
+  
+  // ── Vendor / Partner Management ─────────────────────────────────────────────
+  
+  vendorHotels: () => request<unknown[]>('/inventory/vendor/hotels/'),
+  vendorTours: () => request<unknown[]>('/inventory/vendor/tours/'),
+
+  createHotel: (data: any) => 
+    request<any>('/inventory/vendor/hotels/', { method: 'POST', body: data }),
+  
+  createTour: (data: any) => 
+    request<any>('/inventory/vendor/tours/', { method: 'POST', body: data }),
+
+  createAttraction: (data: any) => 
+    request<any>('/inventory/vendor/attractions/', { method: 'POST', body: data }),
+
+  createRestaurant: (data: any) => 
+    request<any>('/inventory/vendor/restaurants/', { method: 'POST', body: data }),
+
+  createTransfer: (data: any) => 
+    request<any>('/inventory/vendor/transfers/', { method: 'POST', body: data }),
+
+  createRoomType: (data: any) => 
+    request<any>('/inventory/vendor/rooms/', { method: 'POST', body: data }),
+  
+  createTourSlot: (data: any) => 
+    request<any>('/inventory/vendor/slots/', { method: 'POST', body: data }),
+}
+
+// ── Deals (Public + Admin) ────────────────────────────────────────────────────
+
+export interface ApiDealFull {
+  id: string
+  title: string
+  description: string
+  image: string
+  original_price: string
+  sale_price: string
+  discount_pct: number
+  listing_type: string
+  badge: string
+  badge_display: string
+  location: string
+  expires_at: string
+  is_active: boolean
+  is_live: boolean
+  priority: number
+}
+
+export const dealsApi = {
+  list: (params?: { active?: boolean; limit?: number; listing_type?: string }) => {
+    const qs = new URLSearchParams()
+    if (params?.active !== undefined) qs.set('active', params.active ? 'true' : 'false')
+    if (params?.limit) qs.set('limit', String(params.limit))
+    if (params?.listing_type) qs.set('listing_type', params.listing_type)
+    return request<ApiDealFull[]>(`/deals/?${qs}`, { method: 'GET' })
+  },
+
+  get: (id: string) =>
+    request<ApiDealFull>(`/deals/${id}/`, { method: 'GET' }),
+}
+
+// ── CMS / Destinations ────────────────────────────────────────────────────────
+
+export const cmsApi = {
+  destinations: () =>
+    request<unknown[]>('/destinations/', { method: 'GET' }),
+
+  destination: (id: string) =>
+    request<unknown>(`/destinations/${id}/`, { method: 'GET' }),
+}
+
+// ── Admin ─────────────────────────────────────────────────────────────────────
+
+export const adminApi = {
+  // User management
+  users: (params?: { search?: string; role?: string }) => {
+    const qs = new URLSearchParams()
+    if (params?.search) qs.set('search', params.search)
+    if (params?.role) qs.set('role', params.role)
+    return request<User[]>(`/auth/admin/users/?${qs}`, { method: 'GET' })
+  },
+
+  updateUser: (id: string, data: Record<string, unknown>) =>
+    request<User>(`/auth/admin/users/${id}/`, {
+      method: 'PATCH',
+      body: data,
+    }),
+
+  // Organization management
+  organizations: (params?: { status?: string }) => {
+    const qs = new URLSearchParams()
+    if (params?.status) qs.set('status', params.status)
+    return request<OrgData[]>(`/organizations/admin/?${qs}`, { method: 'GET' })
+  },
+
+  approveOrg: (id: string) =>
+    request<OrgData>(`/organizations/admin/${id}/approve/`, { method: 'POST' }),
+
+  suspendOrg: (id: string) =>
+    request<OrgData>(`/organizations/admin/${id}/suspend/`, { method: 'POST' }),
+
+  rejectOrg: (id: string, reason: string) =>
+    request<OrgData>(`/organizations/admin/${id}/reject/`, {
+      method: 'POST',
+      body: { reason } as unknown as Record<string, unknown>,
+    }),
+}
+
+// ── Payments (ABA PayWay) ─────────────────────────────────────────────────────
+
+export interface PayWayPayload {
+  req_time: string
+  merchant_id: string
+  tran_id: string
+  amount: string
+  items: string
+  currency: string
+  return_url: string
+  hash: string
+  aba_url: string
+}
+
+export const paymentsApi = {
+  getPaywayPayload: (bookingId: string) =>
+    request<PayWayPayload>('/payments/payway/checkout-payload/', {
+      method: 'POST',
+      body: { booking_id: bookingId },
+    }),
+
+  checkStatus: (tranId: string) =>
+    request<{ status: string; booking_status: string; reference: string }>(`/payments/payway/check-status/${tranId}/`, {
+      method: 'GET',
+    }),
+}
+
 export default request

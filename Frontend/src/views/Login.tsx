@@ -14,6 +14,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Divider from '@mui/material/Divider'
 import Alert from '@mui/material/Alert'
 import CircularProgress from '@mui/material/CircularProgress'
+import Box from '@mui/material/Box'
 
 // Third-party Imports
 import classnames from 'classnames'
@@ -87,39 +88,53 @@ const LoginV2 = ({ mode }: { mode: Mode }) => {
   }
 
   return (
-    <div className='flex bs-full justify-center'>
-      <div
-        className={classnames(
-          'flex bs-full items-center justify-center flex-1 min-bs-[100dvh] relative p-6 max-md:hidden',
-          {
-            'border-ie': settings.skin === 'bordered'
-          }
-        )}
-      >
-        <div className='plb-12 pis-12'>
-          <img
-            src={characterIllustration}
-            alt='character-illustration'
-            className='max-bs-[500px] max-is-full bs-auto'
-          />
-        </div>
-        <Illustrations
-          image1={{ src: '/images/illustrations/objects/tree-2.png' }}
-          image2={null}
-          maskImg={{ src: authBackground }}
+    <div className='flex bs-full bg-slate-900 relative overflow-hidden'>
+      {/* Cinematic Background */}
+      <div className='absolute inset-0 z-0'>
+        <img
+          src='/images/landing/hero.png'
+          alt='Angkor Wat'
+          className='w-full h-full object-cover opacity-60'
         />
+        <div className='absolute inset-0 bg-gradient-to-r from-slate-950/80 via-slate-950/40 to-transparent' />
+        <div className='absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,183,0,0.1),transparent_50%)]' />
       </div>
-      <div className='flex justify-center items-center bs-full bg-backgroundPaper !min-is-full p-6 md:!min-is-[unset] md:p-12 md:is-[480px] relative'>
-        <Link
-          href='/'
-          className='absolute block-start-5 sm:block-start-[38px] inline-start-6 sm:inline-start-[38px] z-[10] block'
+
+      <div className='flex justify-center flex-1 min-bs-[100dvh] relative p-6 max-md:hidden z-10'>
+        <div className='flex flex-col justify-center items-start pl-12 max-w-2xl'>
+          <div className='inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-[11px] font-bold px-4 py-2 rounded-full mb-8 tracking-widest uppercase'>
+            <span className='text-base leading-none'>🇰🇭</span>
+            Secure Marketplace Access
+          </div>
+          <Typography variant='h1' className='text-white font-black text-6xl leading-[1.05] tracking-tight mb-6'>
+            The Kingdom <br />
+            of <span className='text-transparent bg-clip-text bg-gradient-to-r from-[#FFD166] to-[#FFA500]'>Adoration</span>
+          </Typography>
+          <Typography className='text-white/70 text-lg font-medium max-w-lg leading-relaxed'>
+            Experience the next generation of travel management. 
+            Connect with millions of travelers and manage your inventory with ease.
+          </Typography>
+        </div>
+      </div>
+      <Box 
+        className='flex justify-center items-center bs-full !min-is-full p-6 md:!min-is-[unset] md:p-12 md:is-[540px] relative z-20'
+        sx={{
+          backgroundColor: 'transparent'
+        }}
+      >
+        <Box 
+          className='flex flex-col gap-6 is-full sm:is-auto md:is-full p-8 rounded-[32px] border border-white/10'
+          sx={{
+            background: 'rgba(255, 255, 255, 0.85)',
+            backdropFilter: 'blur(16px)',
+            boxShadow: '0 32px 64px -16px rgba(0,0,0,0.3)',
+            maxWidth: '460px'
+          }}
         >
-          <Logo />
-        </Link>
-        <div className='flex flex-col gap-5 is-full sm:is-auto md:is-full sm:max-is-[400px] md:max-is-[unset]'>
           <div>
-            <Typography variant='h4'>{`Welcome to ${themeConfig.templateName}! 👋🏻`}</Typography>
-            <Typography className='mbs-1'>Please sign-in to your account and start the adventure</Typography>
+            <Logo className='mb-8' />
+            <Typography variant='h4' fontWeight={800} sx={{ letterSpacing: '-0.5px' }}>Welcome back</Typography>
+            <Typography className='mbs-1' color='text.secondary' fontWeight={500}>Sign in to manage your AdoraTrip workspace</Typography>
           </div>
           {error && <Alert severity='error'>{error}</Alert>}
           <form noValidate autoComplete='off' onSubmit={handleSubmit} className='flex flex-col gap-5'>
@@ -187,8 +202,8 @@ const LoginV2 = ({ mode }: { mode: Mode }) => {
               </IconButton>
             </div>
           </form>
-        </div>
-      </div>
+        </Box>
+      </Box>
     </div>
   )
 }

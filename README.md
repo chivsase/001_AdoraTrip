@@ -1183,3 +1183,74 @@ docker compose up --build
 ---
 
 *AdoraTrip — Discover Cambodia, Simplified.*
+
+
+
+# Comprehensive Prompt for Claude AI Agent
+
+**Instructions for you:** Copy and paste the entire block below starting from "---" into your Claude AI Agent (whether you are using Cursor, Cline, or the Claude web interface if it has access to your codebase/browser). 
+
+---
+
+**Role & Context:**
+You are an Elite AI Software Architect, Full-Stack Developer, and Product Manager. I am building a comprehensive, multi-vendor travel booking platform named **AdoraTrip**, focusing heavily on Cambodian domestic tourism and services. 
+
+**Current State & Instructions for Analysis:**
+1. I currently have a frontend running locally at `http://localhost:3000/`.
+2. Please inspect the source code in the `Frontend/` directory (specifically noting the components like `DealsSection`, `DestinationCards` and the layout) and, if you have browser capabilities, access `http://localhost:3000/` to understand the existing UI/UX, design language, and component structure. 
+3. **Primary Directive:** I want the backend flow, data structure, and overall system architecture to perfectly match and empower the frontend you see. 
+
+**Platform Scope & Requirements:**
+This project must be expanded into a fully-featured, multi-tenant SaaS-like marketplace. It requires three distinct platforms/portals:
+1. **User Platform (B2C):** Where end-users register, authenticate, browse, wishlist, and book products/services. Includes a user dashboard for managing bookings, reviews, and rewards.
+2. **Client/Vendor Platform (B2B):** A dedicated portal for service providers (hoteliers, tour operators, restaurants, drivers) to register, manage their own profiles, post their own products/inventory, set pricing, view availability calendars, and track their earnings.
+3. **Super Admin Platform:** The master control panel for the platform owners to approve incoming vendors, set commission rates, manage global site content, review analytics, and moderate user/vendor disputes.
+
+**Core Categories & Inventory Types:**
+The platform must natively support the following distinct booking types and categories (each may need slightly different DB schemas for availability and attributes):
+- Hotels & Resorts
+- Guesthouses
+- Beach Resorts
+- Tours & Activities
+- Attractions
+- Food & Dining
+- Local Transfers
+
+**Primary Target Destinations:**
+- Siem Reap
+- Phnom Penh
+- Sihanoukville
+- Kampot & Kep
+- Battambang
+- Mondulkiri
+
+**Key Features to Architect:**
+- **DealsHOT:** A system for time-limited flash sales, heavy discounts, and priority featured listings.
+- **Travel Guide:** A CMS (Content Management System) for editorial content, localized tips, and SEO-driven travel articles.
+- **Map Explorer:** A geospatial search feature leveraging map APIs (Google Maps/Mapbox) to allow users to search for categories visually.
+- **Rewards:** A loyalty points algorithm where users earn points upon successful checkout and can redeem them for future bookings.
+
+**Your Task & Deliverables:**
+Using your full analytical power, please provide a comprehensive "Master Plan" to take this project from a frontend UI to a fully functional, production-ready platform. Please deliver the following:
+
+1. **System Architecture & Tech Stack:**
+   - Recommend the best backend stack to pair with this Next.js frontend (e.g., Node.js/NestJS, Python/Django, or Go).
+   - Recommend the database architecture (Relational vs NoSQL for the different domains).
+   - Outline the infrastructure for Handling images (e.g., Cloudflare R2 / AWS S3).
+
+2. **Database Schema Blueprint:**
+   - Design the central multi-tenant schema to handle the relationship between Users, Vendors, and the Super Admin.
+   - Design the polymorphic or multi-table schema required to handle the vastly different product types (e.g., a "Hotel" has rooms and nightly rates, while a "Transfer" has routes and vehicle types).
+
+3. **Core Logic & Payment Algorithms:**
+   - Define the logic for the **Rewards System** (earning caps, point value calculation).
+   - Define the **Booking Engine Logic** (handling concurrency to prevent double-booking, cart sessions, inventory locking).
+   - Outline the **Payment & Split-Routing Flow** (how users pay us, and how we split payouts to Vendors minus our Super Admin commission).
+
+4. **Actionable Implementation Roadmap:**
+   - Break this massive project down into a step-by-step sequential roadmap (Phase 1 to Phase X).
+   - List exactly what directories to create, what APIs to build first, and how we will integrate them into the existing frontend.
+
+Please start with your analysis of the frontend/codebase, and then proceed with delivering the Master Plan. Take a deep breath, think step-by-step, and provide the most robust architecture possible.
+
+---

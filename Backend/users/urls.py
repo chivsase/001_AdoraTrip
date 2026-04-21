@@ -7,6 +7,7 @@ from users.views import (
     ChangePasswordView,
     CookieTokenRefreshView,
     CSRFCookieView,
+    DashboardStatsView,
     EmailVerifyView,
     LoginView,
     LogoutView,
@@ -33,6 +34,7 @@ urlpatterns = [
 
     # Profile
     path('me/',                   MeView.as_view(),                 name='me'),
+    path('me/stats/',             DashboardStatsView.as_view(),     name='me-stats'),
 
     # Settings (theme customizer)
     path('settings/',             UserSettingsView.as_view(),       name='settings'),

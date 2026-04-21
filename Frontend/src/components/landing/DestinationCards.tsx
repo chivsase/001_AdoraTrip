@@ -2,128 +2,11 @@
 
 import { useState, useMemo } from 'react'
 import Image from 'next/image'
-import { MapPin, Star, ArrowRight, Heart, Hotel, Compass, Leaf, Waves, Landmark, TrendingUp } from 'lucide-react'
+import { Star, ArrowRight, Heart, Hotel, Compass, Leaf, Waves, Landmark, TrendingUp, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import classnames from 'classnames'
-
-interface Destination {
-  id: string
-  name: string
-  province: string
-  tagline: string
-  image: string
-  rating: number
-  reviews: number
-  hotels: number
-  priceFrom: number
-  tag?: string
-  categories: ('Beach' | 'Culture' | 'Nature' | 'Urban')[]
-  isTrending?: boolean
-}
-
-const destinations: Destination[] = [
-  {
-    id: 'siem-reap',
-    name: 'Siem Reap',
-    province: 'Siem Reap Province',
-    tagline: 'Gateway to Angkor Wat',
-    image: 'https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=800&h=600&fit=crop',
-    rating: 4.9,
-    reviews: 8412,
-    hotels: 450,
-    priceFrom: 18,
-    tag: 'MOST POPULAR',
-    isTrending: true,
-    categories: ['Culture', 'Nature']
-  },
-  {
-    id: 'phnom-penh',
-    name: 'Phnom Penh',
-    province: 'Capital City',
-    tagline: 'Vibrant Capital on the Mekong',
-    image: 'https://images.unsplash.com/photo-1583417319070-4a69db38a482?w=600&h=420&fit=crop',
-    rating: 4.7,
-    reviews: 5230,
-    hotels: 620,
-    priceFrom: 22,
-    categories: ['Urban', 'Culture']
-  },
-  {
-    id: 'sihanoukville',
-    name: 'Sihanoukville',
-    province: 'Preah Sihanouk Province',
-    tagline: 'Pristine Beaches & Islands',
-    image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&h=420&fit=crop',
-    rating: 4.6,
-    reviews: 3980,
-    hotels: 310,
-    priceFrom: 25,
-    tag: 'BEACH ESCAPE',
-    categories: ['Beach', 'Nature']
-  },
-  {
-    id: 'kampot',
-    name: 'Kampot & Kep',
-    province: 'Kampot Province',
-    tagline: 'Riverside Charm & Pepper Farms',
-    image: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=600&h=420&fit=crop',
-    rating: 4.8,
-    reviews: 2740,
-    hotels: 180,
-    priceFrom: 15,
-    tag: 'HIDDEN GEM',
-    categories: ['Nature', 'Culture']
-  },
-  {
-    id: 'battambang',
-    name: 'Battambang',
-    province: 'Battambang Province',
-    tagline: 'Colonial Architecture & Art',
-    image: 'https://images.unsplash.com/photo-1548013146-72479768bada?w=600&h=420&fit=crop',
-    rating: 4.6,
-    reviews: 1890,
-    hotels: 140,
-    priceFrom: 12,
-    categories: ['Culture', 'Urban']
-  },
-  {
-    id: 'mondulkiri',
-    name: 'Mondulkiri',
-    province: 'Mondulkiri Province',
-    tagline: 'Wild Highlands & Waterfalls',
-    image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=420&fit=crop',
-    rating: 4.7,
-    reviews: 1240,
-    hotels: 65,
-    priceFrom: 20,
-    tag: 'ECO ADVENTURE',
-    categories: ['Nature']
-  },
-  {
-    id: 'ratanakiri',
-    name: 'Ratanakiri',
-    province: 'Ratanakiri Province',
-    tagline: 'Volcanic Lakes & Indigenous Culture',
-    image: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=600&h=420&fit=crop',
-    rating: 4.7,
-    reviews: 890,
-    hotels: 45,
-    priceFrom: 18,
-    categories: ['Nature', 'Culture']
-  },
-  {
-    id: 'kratie',
-    name: 'Kratie',
-    province: 'Kratie Province',
-    tagline: 'Irrawaddy Dolphins & Mekong',
-    image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=600&h=420&fit=crop',
-    rating: 4.5,
-    reviews: 720,
-    hotels: 38,
-    priceFrom: 10,
-    categories: ['Nature']
-  }
-]
+import { useDestinations } from '@/hooks/useDestinations'
+import type { Destination, DestinationCategory } from '@/types/destinations'
 
 const tagColors: Record<string, string> = {
   'MOST POPULAR': 'bg-[#287DFA] text-white',
@@ -132,7 +15,7 @@ const tagColors: Record<string, string> = {
   'ECO ADVENTURE': 'bg-[#065F46] text-white'
 }
 
-type CategoryType = 'All' | 'Beach' | 'Culture' | 'Nature' | 'Urban'
+type CategoryType = 'All' | DestinationCategory
 
 const filterCategories: { label: CategoryType; icon: any }[] = [
   { label: 'All', icon: Compass },
@@ -163,7 +46,35 @@ function WishlistButton() {
   )
 }
 
-/* Featured card — larger, spans 2 cols on desktop */
+/* Skeleton for a featured card */
+function FeaturedCardSkeleton() {
+  return (
+    <div className='col-span-1 sm:col-span-2 rounded-[2.5rem] overflow-hidden bg-slate-200 animate-pulse h-[480px] sm:h-[520px]' />
+  )
+}
+
+/* Skeleton for a regular card */
+function DestinationCardSkeleton() {
+  return (
+    <div className='rounded-[2.5rem] overflow-hidden border border-slate-100 bg-white animate-pulse p-2.5'>
+      <div className='h-64 rounded-[2rem] bg-slate-200' />
+      <div className='p-6 space-y-3'>
+        <div className='flex justify-between'>
+          <div className='h-3 w-20 bg-slate-200 rounded' />
+          <div className='h-5 w-10 bg-slate-100 rounded-full' />
+        </div>
+        <div className='pt-5 border-t border-slate-50 flex justify-between'>
+          <div className='space-y-1'>
+            <div className='h-2 w-14 bg-slate-100 rounded' />
+            <div className='h-5 w-16 bg-slate-200 rounded' />
+          </div>
+          <div className='w-10 h-10 rounded-2xl bg-slate-100' />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function FeaturedCard({ dest }: { dest: Destination }) {
   return (
     <Link
@@ -242,7 +153,6 @@ function FeaturedCard({ dest }: { dest: Destination }) {
   )
 }
 
-/* Regular card */
 function DestinationCard({ dest, index }: { dest: Destination; index: number }) {
   return (
     <Link
@@ -298,19 +208,18 @@ function DestinationCard({ dest, index }: { dest: Destination; index: number }) 
 
 export default function DestinationCards() {
   const [activeCategory, setActiveCategory] = useState<CategoryType>('All')
+  const { destinations, isLoading, error, refetch } = useDestinations()
 
   const filteredDestinations = useMemo(() => {
     if (activeCategory === 'All') return destinations
-
-    return destinations.filter(d => d.categories.includes(activeCategory as any))
-  }, [activeCategory])
+    return destinations.filter(d => d.categories.includes(activeCategory as DestinationCategory))
+  }, [activeCategory, destinations])
 
   const featured = filteredDestinations[0]
   const rest = filteredDestinations.slice(1)
 
   return (
     <section className='py-32 bg-[#F8FAFC] relative overflow-hidden'>
-      {/* Editorial background numbers/text */}
       <div className='absolute top-0 left-0 w-full h-full pointer-events-none select-none overflow-hidden flex items-center justify-center -z-0 opacity-[0.03]'>
         <span className='text-[40rem] font-black font-serif italic transform -rotate-12 translate-y-20'>Explore</span>
       </div>
@@ -328,7 +237,7 @@ export default function DestinationCards() {
               Popular <br /> <span className='text-[#287DFA]'>Destinations</span>
             </h2>
             <p className='text-xl text-slate-500 max-w-2xl font-medium leading-relaxed mx-auto lg:mx-0'>
-              Embark on a journey through the <span className='text-slate-900 font-bold italic'>Kingdom of Cambodia</span>. 
+              Embark on a journey through the <span className='text-slate-900 font-bold italic'>Kingdom of Cambodia</span>.
               Find your perfect escape from our handpicked provincial gems.
             </p>
           </div>
@@ -363,51 +272,62 @@ export default function DestinationCards() {
           </div>
         </div>
 
-        {/* Grid System */}
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8'>
-          {filteredDestinations.length > 0 ? (
-            <>
-              {featured && <FeaturedCard dest={featured} />}
-              {rest.map((dest, i) => (
-                <DestinationCard key={dest.id} dest={dest} index={i} />
-              ))}
-            </>
-          ) : (
-            <div className='col-span-full flex flex-col items-center justify-center py-32 rounded-[3rem] bg-white border-2 border-dashed border-slate-100'>
-              <div className='w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-8'>
-                <Compass className='w-12 h-12 text-slate-200 animate-spin-slow' />
+        {/* Error state */}
+        {error && (
+          <div className='flex flex-col items-center justify-center py-32 rounded-[3rem] bg-white border-2 border-dashed border-slate-100'>
+            <p className='text-slate-500 mb-6'>Could not load destinations.</p>
+            <button
+              onClick={refetch}
+              className='flex items-center gap-2 text-sm font-semibold text-[#287DFA] border border-blue-200 px-5 py-2.5 rounded-xl hover:bg-blue-50 transition-colors'
+            >
+              <RefreshCw className='w-4 h-4' />
+              Try again
+            </button>
+          </div>
+        )}
+
+        {/* Grid */}
+        {!error && (
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8'>
+            {isLoading ? (
+              <>
+                <FeaturedCardSkeleton />
+                {Array.from({ length: 5 }).map((_, i) => <DestinationCardSkeleton key={i} />)}
+              </>
+            ) : filteredDestinations.length > 0 ? (
+              <>
+                {featured && <FeaturedCard dest={featured} />}
+                {rest.map((dest, i) => (
+                  <DestinationCard key={dest.id} dest={dest} index={i} />
+                ))}
+              </>
+            ) : (
+              <div className='col-span-full flex flex-col items-center justify-center py-32 rounded-[3rem] bg-white border-2 border-dashed border-slate-100'>
+                <div className='w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-8'>
+                  <Compass className='w-12 h-12 text-slate-200 animate-spin-slow' />
+                </div>
+                <h3 className='text-2xl font-black text-slate-900 mb-3'>No treasures found here</h3>
+                <p className='text-slate-500 max-w-xs text-center font-medium leading-relaxed'>
+                  Our scouts are still exploring this theme. Try searching for <span className='text-[#287DFA] font-bold'>Beach</span> or <span className='text-emerald-600 font-bold'>Nature</span> adventures.
+                </p>
+                <button
+                  onClick={() => setActiveCategory('All')}
+                  className='mt-10 px-10 py-4 bg-slate-900 text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-[#287DFA] hover:scale-105 transition-all shadow-xl'
+                >
+                  Show All Treasures
+                </button>
               </div>
-              <h3 className='text-2xl font-black text-slate-900 mb-3'>No treasures found here</h3>
-              <p className='text-slate-500 max-w-xs text-center font-medium leading-relaxed'>
-                Our scouts are still exploring this theme. Try searching for <span className='text-[#287DFA] font-bold'>Beach</span> or <span className='text-emerald-600 font-bold'>Nature</span> adventures.
-              </p>
-              <button
-                onClick={() => setActiveCategory('All')}
-                className='mt-10 px-10 py-4 bg-slate-900 text-white font-black uppercase tracking-widest text-xs rounded-2xl hover:bg-[#287DFA] hover:scale-105 transition-all shadow-xl'
-              >
-                Show All Treasures
-              </button>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
       </div>
 
       <style jsx global>{`
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .no-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .animate-spin-slow { animation: spin-slow 20s linear infinite; }
       `}</style>
     </section>
   )

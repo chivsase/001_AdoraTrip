@@ -12,6 +12,7 @@ export { default as PopularCities } from './PopularCities'
 export { default as TrustBar } from './TrustBar'
 export { default as AppDownloadBanner } from './AppDownloadBanner'
 export { default as Footer } from './Footer'
+export { default as LocationPermissionBanner } from './LocationPermissionBanner'
 
 // Kept for potential standalone use (e.g., admin-facing pages)
 export { default as Header } from './Header'

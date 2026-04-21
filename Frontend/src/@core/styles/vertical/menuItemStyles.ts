@@ -57,6 +57,7 @@ const menuItemStyles = (verticalNavOptions: VerticalNavState, theme: Theme): Men
                       theme.palette.primary.main,
                       0.5
                     )}, var(--mui-palette-primary-main) 100%)`,
+              boxShadow: '0 8px 16px -4px rgba(40, 125, 250, 0.4)',
               [`& .${menuClasses.icon}`]: {
                 color: 'inherit'
               }

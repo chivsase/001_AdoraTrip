@@ -1,5 +1,7 @@
 import uuid
-from django.db import models
+from django.db import models, transaction
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 
@@ -29,7 +31,15 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email     = models.EmailField(unique=True)
     full_name = models.CharField(max_length=150, blank=True)
     phone     = models.CharField(max_length=20, blank=True)
-    avatar    = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    avatar_url = models.URLField(max_length=500, null=True, blank=True)
+
+    REWARDS_TIER_CHOICES = [
+        ('bronze', 'Bronze'),
+        ('silver', 'Silver'),
+        ('gold', 'Gold'),
+        ('platinum', 'Platinum'),
+    ]
+    rewards_tier = models.CharField(max_length=20, choices=REWARDS_TIER_CHOICES, default='bronze')
 
     # Platform-level role (coarse; org membership holds fine-grained role)
     platform_role = models.CharField(

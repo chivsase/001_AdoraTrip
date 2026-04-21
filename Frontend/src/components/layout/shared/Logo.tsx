@@ -6,6 +6,7 @@ import type { CSSProperties } from 'react'
 
 // Third-party Imports
 import styled from '@emotion/styled'
+import classnames from 'classnames'
 
 // Type Imports
 import type { VerticalNavContextProps } from '@menu/contexts/verticalNavContext'
@@ -44,7 +45,7 @@ const LogoText = styled.span<LogoTextProps>`
       : 'opacity: 1; margin-inline-start: 10px;'}
 `
 
-const Logo = ({ color }: { color?: CSSProperties['color'] }) => {
+const Logo = ({ color, className }: { color?: CSSProperties['color']; className?: string }) => {
   // Refs
   const logoTextRef = useRef<HTMLSpanElement>(null)
 
@@ -71,7 +72,7 @@ const Logo = ({ color }: { color?: CSSProperties['color'] }) => {
   }, [isHovered, layout, isBreakpointReached])
 
   return (
-    <div className='flex items-center min-bs-[24px]'>
+    <div className={classnames('flex items-center min-bs-[24px]', className)}>
       <AppLogo className='text-[22px] text-primary' />
       <LogoText
         color={color}

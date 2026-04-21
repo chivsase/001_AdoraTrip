@@ -13,6 +13,12 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-in-production'
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 
+# ── ABA PayWay Settings ───────────────────────────────────────
+ABA_PAYWAY_MERCHANT_ID = config('ABA_PAYWAY_MERCHANT_ID', default='')
+ABA_PAYWAY_API_KEY     = config('ABA_PAYWAY_API_KEY', default='')
+ABA_PAYWAY_BASE_URL    = config('ABA_PAYWAY_BASE_URL', default='https://checkout-sandbox.payway.com.kh')
+
+
 # ----------------------------------------------------------
 # Custom User Model
 # ----------------------------------------------------------
@@ -51,6 +57,12 @@ INSTALLED_APPS = [
     'users',
     'organizations',
     'api',
+    'cms',
+    'inventory',
+    'deals',
+    'bookings',
+    'payments',
+    'rewards',
 ]
 
 SITE_ID = 1
@@ -435,10 +447,41 @@ LOGGING = {
             'propagate': False,
         },
 
-        # Celery task logs
+        'cms': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'inventory': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'deals': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+
         'celery': {
             'handlers': ['console', 'file', 'error_file'],
             'level': 'INFO',
+            'propagate': False,
+        },
+
+        'bookings': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'payments': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'rewards': {
+            'handlers': ['console', 'file', 'error_file'],
+            'level': 'DEBUG',
             'propagate': False,
         },
     },

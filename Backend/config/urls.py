@@ -31,6 +31,12 @@ urlpatterns = [
     path('api/v1/auth/', include('users.urls', namespace='auth')),
     path('api/v1/organizations/', include('organizations.urls', namespace='organizations')),
     path('api/v1/', include('api.urls', namespace='api')),
+    path('api/v1/', include('cms.urls', namespace='cms')),
+    path('api/v1/', include('inventory.urls', namespace='inventory')),
+    path('api/v1/', include('deals.urls', namespace='deals')),
+    path('api/v1/', include('bookings.urls', namespace='bookings')),
+    path('api/v1/', include('payments.urls', namespace='payments')),
+    path('api/v1/', include('rewards.urls', namespace='rewards')),
 
     # Health check — used by Docker HEALTHCHECK and load balancers
     path('api/v1/health/', health_check, name='health'),

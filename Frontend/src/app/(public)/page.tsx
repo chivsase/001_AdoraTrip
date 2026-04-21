@@ -6,7 +6,8 @@ import {
   PopularCities,
   TrustBar,
   AppDownloadBanner,
-  Footer
+  Footer,
+  LocationPermissionBanner
 } from '@/components/landing'
 
 /**
@@ -21,6 +22,9 @@ export default function HomePage() {
     <div className='flex flex-col'>
       {/* Dismissible promotional strip */}
       <PromoBanner />
+
+      {/* Location permission banner */}
+      <LocationPermissionBanner />
 
       {/* 1 · Hero search form */}
       <HeroSearch />
